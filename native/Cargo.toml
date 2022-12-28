@@ -1,0 +1,48 @@
+[package]
+name = "native"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[lib]
+crate-type = ["cdylib", "staticlib"]
+
+[features]
+default = [
+    "default-ring",
+]
+
+default-ring = [
+    "ostrich/default-ring",
+]
+
+default-openssl = [
+    "ostrich/default-openssl",
+]
+
+
+[dependencies]
+anyhow = "1"
+flutter_rust_bridge = "1"
+argh = "0.1"
+socket2 = "0.4"
+ostrich = { git = "https://github.com/afula/tun2ostrich.git", package = "ostrich",default-features = true}
+tokio = { version = "1", features = ["rt"] }
+futures = "0.3"
+
+#[target.'cfg(any(target_os = "macos", target_os = "linux"))'.dependencies]
+#libc = "0.2"
+
+[dev-dependencies]
+serde_json = "1.0.79"
+surge-ping = {git = "https://github.com/kolapapa/surge-ping.git"}
+anyhow = "1.0.57"
+tokio = {version = "1.18.2", default-features = false, features = ["rt-multi-thread", "macros"]}
+futures = "0.3.21"
+
+
+
+
+
+
+
