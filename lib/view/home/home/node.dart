@@ -4,22 +4,24 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:logger/logger.dart';
+import 'package:ostrich_flutter/node/bloc/node_bloc.dart';
 import 'package:ostrich_flutter/unit/http.dart';
-import 'package:path_provider/path_provider.dart';
+// import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'dart:convert';
 
 import 'package:window_manager/window_manager.dart';
 
-import '../unit/current_page.dart';
+import '../../../unit/current_page.dart';
 
-class AddServerList extends StatefulWidget {
-  const AddServerList({Key? key}) : super(key: key);
+class NodeService extends StatefulWidget {
+  const NodeService({Key? key}) : super(key: key);
   @override
-  State<AddServerList> createState() => _AddServerList();
+  State<NodeService> createState() => _NodeService();
 }
 
-class _AddServerList extends State<AddServerList> {
+class _NodeService extends State<NodeService> {
   final TextEditingController _serverController = TextEditingController();
   final TextEditingController _idController = TextEditingController();
 
@@ -39,6 +41,11 @@ class _AddServerList extends State<AddServerList> {
       _idController.text = user;
     }
   }
+  // bool toggle = false;
+  //  void _toggle(){ setState(() { toggle = !toggle; });
+  // _getToggleChild(){
+  //   if(toggle){ return  new Text("Toggle one"); }else{ return new MaterialButton(onPressed: (){},child: new Text("Toggle two"),);
+  //    }
 
   @override
   Widget build(BuildContext context) {
@@ -47,34 +54,20 @@ class _AddServerList extends State<AddServerList> {
         title: const Text("添加服务器"),
         automaticallyImplyLeading: false,
       ),
-      body: Center(
-          child: Container(
-        padding: const EdgeInsets.fromLTRB(80, 0, 80, 0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            TextField(
-              decoration: const InputDecoration(
-                labelText: '服务器地址：',
-                labelStyle: TextStyle(color: Colors.blue),
-                enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Color(0x00FF0000)),
-                    borderRadius: BorderRadius.all(Radius.circular(10))),
-                focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Color(0x00000000)),
-                    borderRadius: BorderRadius.all(Radius.circular(10))),
-                fillColor: Color(0x30cccccc),
-                filled: true,
-              ),
-              textAlign: TextAlign.center,
-              controller: _serverController,
-            ),
-            Container(
-              padding: const EdgeInsets.only(top: 20),
-              child: TextField(
+      body: BlocBuilder<NodeBloc, NodeState>(
+          // bloc:,
+
+          builder: (context, state) {
+        return Center(
+            child: Container(
+          padding: const EdgeInsets.fromLTRB(80, 0, 80, 0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              TextField(
                 decoration: const InputDecoration(
-                  labelText: '用户ID：',
+                  labelText: '服务器地址：',
                   labelStyle: TextStyle(color: Colors.blue),
                   enabledBorder: OutlineInputBorder(
                       borderSide: BorderSide(color: Color(0x00FF0000)),
@@ -85,26 +78,54 @@ class _AddServerList extends State<AddServerList> {
                   fillColor: Color(0x30cccccc),
                   filled: true,
                 ),
-                controller: _idController,
                 textAlign: TextAlign.center,
+                controller: _serverController,
               ),
-            ),
-            Container(
+              Container(
                 padding: const EdgeInsets.only(top: 20),
-                child: CupertinoButton(
-                    child: const Text("确定"),
-                    color: Colors.blueGrey,
-                    pressedOpacity: .5,
-                    onPressed: () {
-                      _getServerList();
-                      print("确定");
-                      print(_serverController.text);
-                      print(_idController.text);
-                      
-                    }))
-          ],
-        ),
-      )),
+                child: TextField(
+                  decoration: const InputDecoration(
+                    labelText: '用户ID：',
+                    labelStyle: TextStyle(color: Colors.blue),
+                    enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Color(0x00FF0000)),
+                        borderRadius: BorderRadius.all(Radius.circular(10))),
+                    focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Color(0x00000000)),
+                        borderRadius: BorderRadius.all(Radius.circular(10))),
+                    fillColor: Color(0x30cccccc),
+                    filled: true,
+                  ),
+                  controller: _idController,
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              Text(
+                  "title ${state.nodeModel.isEmpty ? '' : state.nodeModel[0].title}"),
+              Container(
+                  padding: const EdgeInsets.only(top: 20),
+                  child: CupertinoButton(
+                      child: const Text("确定 "),
+                      color: Colors.blueGrey,
+                      pressedOpacity: .5,
+                      onPressed: () {
+                        context.read<NodeBloc>().add(
+                              AddDataEvent(
+                                title: "add data test",
+                                desc: "descController.text",
+                                date: "dateController.text",
+                              ),
+                            );
+                        Navigator.of(context).pushNamed("/main_menu");
+                        _getServerList();
+                        print("确定");
+                        print(_serverController.text);
+                        print(_idController.text);
+                      }))
+            ],
+          ),
+        ));
+      }),
     );
   }
 
@@ -148,7 +169,7 @@ class _AddServerList extends State<AddServerList> {
           jsonMap["outbounds"][0]["settings"]["address"] =
               data["ret"]["server"][0]["ip"];
           jsonMap["outbounds"][0]["settings"]["server_name"] =
-          data["ret"]["server"][0]["host"];
+              data["ret"]["server"][0]["host"];
           jsonMap["outbounds"][0]["settings"]["password"] =
               data["ret"]["server"][0]["passwd"];
           jsonMap["outbounds"][0]["settings"]["port"] =
@@ -178,7 +199,7 @@ class _AddServerList extends State<AddServerList> {
               .replaceAll(
                   "REPLACE_ME_WITH_IP", "${data["ret"]["server"][0]["ip"]}");
           await File(dir.path + "/latest.json").writeAsString(stringJson);
-          Future.delayed(Duration(seconds: 2),(){
+          Future.delayed(Duration(seconds: 2), () {
             windowManager.hide();
             CurrentPage.currentPage = "home_page";
             Navigator.of(context).pop("savedServerList");
