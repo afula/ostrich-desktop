@@ -14,9 +14,6 @@ class AboutMousePage extends StatefulWidget {
 }
 
 class _AboutMousePageState extends State<AboutMousePage> {
-  List<DropdownMenuItem<String>> serverDropMenuItem = [];
-  String chooseItem = '';
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -24,7 +21,7 @@ class _AboutMousePageState extends State<AboutMousePage> {
         builder: (context, state) {
           return Center(
             child: ListView(
-              children: getList(state.nodeModel),
+              children: getList(state),
             )
 
           );
@@ -34,18 +31,21 @@ class _AboutMousePageState extends State<AboutMousePage> {
   }
 
 
-getList(List<NodeModel> nodeModel){
+getList(NodeState state){
     List<Widget> nodeList = [];
-    for(int index=0;index<nodeModel.length;index++){
-      nodeList.add(GestureDetector(
-        onTap: (){
-          print("点击了$index");
-          context.read<NodeBloc>().add(
-             UpdateNodeIndexEvent(index: index),
-          );
-        },
-        child: Text(nodeModel[index].country+"---"+nodeModel[index].city),
-      ));
+    for(int index=0;index<state.nodeModel.length;index++){
+      nodeList.add(
+       CheckboxListTile(
+            title: Text(state.nodeModel[index].country+"--"+state.nodeModel[index].city),
+            value: state.currentNodeIndex == index ? true:false,
+            onChanged: (value){
+              context.read<NodeBloc>().add(
+                UpdateNodeIndexEvent(index: index),
+              );
+
+            },
+          ),
+  );
     }
     return nodeList;
 }

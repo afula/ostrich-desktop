@@ -122,7 +122,7 @@ class NodeBloc extends Bloc<NodeEvent, NodeState> {
       // id: state.id
     ));
 
-    print('_updateNodeIndex after emit $state');
+    print('_updateNodeIndex after emit ${state.currentNodeIndex}');
   }
 
 /*   Future<void> _deleteData(
