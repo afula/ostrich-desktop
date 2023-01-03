@@ -15,18 +15,21 @@ class NodeState extends Equatable {
       this.id = ''});
 
   @override
-  List<Object?> get props => [nodeModel, currentMenuIndex, currentNodeIndex,server,id];
+  List<Object?> get props =>
+      [nodeModel, currentMenuIndex, currentNodeIndex, server, id];
 
-  NodeState copyWith(
-      {required List<NodeModel> nodeModel,
-      required int menuIndex,
-      required int nodeIndex,
-      String server? '',
-      String id,
-      }) {
+  NodeState copyWith({
+    required List<NodeModel> nodeModel,
+    required int menuIndex,
+    required int nodeIndex,
+    required String server,
+    required String id,
+  }) {
     return NodeState(
         nodeModel: nodeModel,
         currentMenuIndex: menuIndex,
-        currentNodeIndex: nodeIndex);
+        currentNodeIndex: nodeIndex,
+        server: server,
+        id: id);
   }
 }

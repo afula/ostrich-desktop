@@ -1,5 +1,5 @@
+// import '../models/node_model.dart';
 part of 'node_bloc.dart';
-import '../models/node_model.dart';
 
 abstract class NodeEvent extends Equatable {
   const NodeEvent();
@@ -48,10 +48,6 @@ class ShowDataEvent extends NodeEvent {
   }
 } */
 
-
-
-
-
 class UpdateMenuIndexEvent extends NodeEvent {
   final int index;
 
@@ -64,6 +60,7 @@ class UpdateMenuIndexEvent extends NodeEvent {
   @override
   List<Object> get props => [index];
 }
+
 class UpdateNodeIndexEvent extends NodeEvent {
   final int index;
 

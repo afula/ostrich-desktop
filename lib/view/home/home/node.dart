@@ -122,8 +122,8 @@ class _NodeService extends State<NodeService> {
     );
   }
 
-/* //split old _getServerList into _getServerList and _updateConfig, and move it to unit
-  Map<String, dynamic> _getServerList() async {
+//split old _getServerList into _getServerList and _update
+  _getServerList() async {
     if (_serverController.text.isEmpty || _idController.text.isEmpty) {
       EasyLoading.showToast("不能输入为空！");
       return;
@@ -206,5 +206,5 @@ class _NodeService extends State<NodeService> {
       print("error is :");
       print(error);
     });
-  } */
+  }
 }

@@ -32,7 +32,8 @@ class NodeBloc extends Bloc<NodeEvent, NodeState> {
             ))
         .toList();
 
-    emit(state.copyWith(nodeModel: list, menuIndex: 0, nodeIndex: 0));
+    emit(state.copyWith(
+        nodeModel: list, menuIndex: 0, nodeIndex: 0, server: '', id: ''));
     print('SHOW DATA ${list.length}');
   }
 
@@ -75,7 +76,9 @@ class NodeBloc extends Bloc<NodeEvent, NodeState> {
     emit(state.copyWith(
         nodeModel: newNodes,
         menuIndex: state.currentMenuIndex,
-        nodeIndex: state.currentNodeIndex));
+        nodeIndex: state.currentNodeIndex,
+        server: state.server,
+        id: state.id));
 
     print('_updateNode after emit ${state.nodeModel}');
   }
@@ -97,7 +100,9 @@ class NodeBloc extends Bloc<NodeEvent, NodeState> {
     emit(state.copyWith(
         nodeModel: newNodes,
         menuIndex: menuIndex,
-        nodeIndex: state.currentNodeIndex));
+        nodeIndex: state.currentNodeIndex,
+        server: state.server,
+        id: state.id));
 
     print('_updateIndex after emit ${state.currentMenuIndex}');
   }
@@ -119,7 +124,9 @@ class NodeBloc extends Bloc<NodeEvent, NodeState> {
     emit(state.copyWith(
         nodeModel: newNodes,
         menuIndex: state.currentMenuIndex,
-        nodeIndex: nodeIndex));
+        nodeIndex: nodeIndex,
+        server: state.server,
+        id: state.id));
 
     print('_updateIndex after emit ${state.currentNodeIndex}');
   }
