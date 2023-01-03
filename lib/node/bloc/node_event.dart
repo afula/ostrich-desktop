@@ -1,4 +1,5 @@
 part of 'node_bloc.dart';
+import '../models/node_model.dart';
 
 abstract class NodeEvent extends Equatable {
   const NodeEvent();
@@ -20,7 +21,7 @@ class ShowDataEvent extends NodeEvent {
 // }
 }
 
-class AddDataEvent extends NodeEvent {
+/* class AddDataEvent extends NodeEvent {
   final String title;
   final String desc;
   final String date;
@@ -45,26 +46,46 @@ class AddDataEvent extends NodeEvent {
       date: date ?? this.date,
     );
   }
-}
+} */
 
-class UpdateDataEvent extends NodeEvent {
-  final NodeModel nodeList;
 
-  const UpdateDataEvent(this.nodeList);
 
-  @override
-  List<Object?> get props => [nodeList];
-}
 
-class DeleteDataEvent extends NodeEvent {
-  final String id;
 
-  const DeleteDataEvent({required this.id});
+class UpdateMenuIndexEvent extends NodeEvent {
+  final int index;
 
-  DeleteDataEvent copyWith({String? id}) {
-    return DeleteDataEvent(id: id ?? this.id);
+  const UpdateMenuIndexEvent({required this.index});
+
+  UpdateMenuIndexEvent copyWith({required int index}) {
+    return UpdateMenuIndexEvent(index: index);
   }
 
   @override
-  List<Object> get props => [id];
+  List<Object> get props => [index];
+}
+class UpdateNodeIndexEvent extends NodeEvent {
+  final int index;
+
+  const UpdateNodeIndexEvent({required this.index});
+
+  UpdateNodeIndexEvent copyWith({required int index}) {
+    return UpdateNodeIndexEvent(index: index);
+  }
+
+  @override
+  List<Object> get props => [index];
+}
+
+class UpdateNodeEvent extends NodeEvent {
+  final List<NodeModel> nodeModel;
+
+  const UpdateNodeEvent({required this.nodeModel});
+
+  UpdateNodeEvent copyWith({required List<NodeModel> nodeModel}) {
+    return UpdateNodeEvent(nodeModel: nodeModel);
+  }
+
+  @override
+  List<Object> get props => [nodeModel];
 }

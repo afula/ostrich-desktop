@@ -100,8 +100,6 @@ class _NodeService extends State<NodeService> {
                   textAlign: TextAlign.center,
                 ),
               ),
-              Text(
-                  "title ${state.nodeModel.isEmpty ? '' : state.nodeModel[0].title}"),
               Container(
                   padding: const EdgeInsets.only(top: 20),
                   child: CupertinoButton(
@@ -109,15 +107,10 @@ class _NodeService extends State<NodeService> {
                       color: Colors.blueGrey,
                       pressedOpacity: .5,
                       onPressed: () {
-                        context.read<NodeBloc>().add(
-                              AddDataEvent(
-                                title: "add data test",
-                                desc: "descController.text",
-                                date: "dateController.text",
-                              ),
-                            );
-                        Navigator.of(context).pushNamed("/main_menu");
                         _getServerList();
+                        context.read<NodeBloc>().add(
+                              const UpdateMenuIndexEvent(index: 1),
+                            );
                         print("确定");
                         print(_serverController.text);
                         print(_idController.text);
@@ -129,7 +122,8 @@ class _NodeService extends State<NodeService> {
     );
   }
 
-  _getServerList() async {
+/* //split old _getServerList into _getServerList and _updateConfig, and move it to unit
+  Map<String, dynamic> _getServerList() async {
     if (_serverController.text.isEmpty || _idController.text.isEmpty) {
       EasyLoading.showToast("不能输入为空！");
       return;
@@ -212,5 +206,5 @@ class _NodeService extends State<NodeService> {
       print("error is :");
       print(error);
     });
-  }
+  } */
 }

@@ -20,7 +20,7 @@
   "outbounds": [{
     "protocol": "trojan",
     "settings": {
-      "server_name": "walkonbit.online",
+      "server_name": "dev.kamel.services",
       "address": "158.247.219.199",
       "password": "138c58c5",
       "port": 443,

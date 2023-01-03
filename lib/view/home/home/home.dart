@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:window_manager/window_manager.dart';
-
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ostrich_flutter/node/bloc/node_bloc.dart';
 import 'node.dart';
 import 'mouse.dart';
 
@@ -75,8 +76,11 @@ class _HomePageState extends State<HomePage> with WindowListener {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Flex(
+    return Scaffold(body: BlocBuilder<NodeBloc, NodeState>(
+        // bloc:,
+
+        builder: (context, state) {
+      return Flex(
         direction: Axis.horizontal,
         children: [
           Expanded(
@@ -87,6 +91,13 @@ class _HomePageState extends State<HomePage> with WindowListener {
                 itemBuilder: (context, index) {
                   return InkWell(
                     onTap: () {
+                      print(
+                          "index $index, currentIndex: ${state.currentMenuIndex}");
+                      if (index != state.currentMenuIndex) {
+                        context.read<NodeBloc>().add(
+                              UpdateMenuIndexEvent(index: index),
+                            );
+                      }
                       _currentIndex = index;
                       setState(() {});
                     },
@@ -96,11 +107,11 @@ class _HomePageState extends State<HomePage> with WindowListener {
                       child: Text(
                         _titles[index],
                         style: TextStyle(
-                            color: _currentIndex == index
+                            color: state.currentMenuIndex == index
                                 ? Colors.white
                                 : Colors.black),
                       ),
-                      color: _currentIndex == index
+                      color: state.currentMenuIndex == index
                           ? Colors.blue.withOpacity(.8)
                           : Colors.white,
                     ),
@@ -120,12 +131,12 @@ class _HomePageState extends State<HomePage> with WindowListener {
           Expanded(
             flex: 8,
             child: IndexedStack(
-              index: _currentIndex,
+              index: state.currentMenuIndex,
               children: _pages,
             ),
           )
         ],
-      ),
-    );
+      );
+    }));
   }
 }

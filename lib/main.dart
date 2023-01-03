@@ -4,6 +4,7 @@ import 'package:ostrich_flutter/unit/http.dart';
 import 'package:ostrich_flutter/unit/init.dart';
 import 'package:ostrich_flutter/view/addServerList.dart';
 import 'package:ostrich_flutter/view/home/home/home.dart';
+import 'package:ostrich_flutter/view/home/home/mouse.dart';
 import 'package:window_manager/window_manager.dart';
 import 'view/home.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -48,6 +49,7 @@ class MyApp extends StatelessWidget {
         routes: {
           "/add_server": (context) => const AddServerList(),
           "/main_menu": (context) => const HomePage(),
+          "/main_mouse": (context) => const AboutMousePage(),
           "/home_page": (context) => const MyHomePage(title: "Ostrich")
         },
         home: const MyHomePage(title: 'Ostrich'),

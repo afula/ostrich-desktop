@@ -1,32 +1,37 @@
 import 'package:equatable/equatable.dart';
 
 class NodeModel extends Equatable {
-  final String id;
-  final String title;
-  final String desc;
-  final String date;
+/*   jsonMap["outbounds"][0]["settings"]["address"] = serverJson["ip"];
+  jsonMap["outbounds"][0]["settings"]["server_name"] = serverJson["host"];
+  jsonMap["outbounds"][0]["settings"]["password"] = serverJson["passwd"];
+  jsonMap["outbounds"][0]["settings"]["port"] = serverJson["port"]; */
+
+  final String ip;
+  final String host;
+  final String passwd;
+  final String port;
 
   const NodeModel({
-    required this.id,
-    required this.title,
-    required this.desc,
-    required this.date,
+    required this.ip,
+    required this.host,
+    required this.passwd,
+    required this.port,
   });
 
   NodeModel copyWith({
-    String? id,
-    String? title,
-    String? desc,
-    String? date,
+    String? ip,
+    String? host,
+    String? passwd,
+    String? port,
   }) {
     return NodeModel(
-      id: id ?? this.id,
-      title: title ?? this.title,
-      desc: desc ?? this.desc,
-      date: date ?? this.date,
+      ip: ip ?? this.ip,
+      host: host ?? this.host,
+      passwd: passwd ?? this.passwd,
+      port: port ?? this.port,
     );
   }
 
   @override
-  List<Object?> get props => [id, title, desc, date];
+  List<Object?> get props => [ip, host, passwd, port];
 }
