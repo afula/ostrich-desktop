@@ -8,17 +8,17 @@ abstract class NodeEvent extends Equatable {
 class ShowDataEvent extends NodeEvent {
   @override
   // TODO: implement props
-  List<Object?> get props => throw UnimplementedError();
-// final List<NodeModel> nodeList;
-//
-// const ShowDataEvent({required this.nodeList});
-//
-// @override
-// List<Object?> get props => [nodeList];
-//
-// ShowDataEvent copyWith({List<NodeModel>? nodeList}) {
-//   return ShowDataEvent(nodeList: nodeList ?? this.nodeList);
-// }
+  // List<Object?> get props => throw UnimplementedError();
+final List<NodeModel> nodeList;
+
+const ShowDataEvent({required this.nodeList});
+
+@override
+List<Object?> get props => [nodeList];
+
+ShowDataEvent copyWith({List<NodeModel>? nodeList}) {
+  return ShowDataEvent(nodeList: nodeList ?? this.nodeList);
+}
 }
 
 /* class AddDataEvent extends NodeEvent {

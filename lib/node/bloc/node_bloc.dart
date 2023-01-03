@@ -21,20 +21,21 @@ class NodeBloc extends Bloc<NodeEvent, NodeState> {
   }
 
   Future showData(ShowDataEvent event, Emitter<NodeState> emit) async {
-    final dataList = await DBHelper.selectAll(DBHelper.nodeTable);
+    // final dataList = await DBHelper.selectAll(DBHelper.nodeTable);
+    final dataList = event.nodeList;
 
-    final list = dataList
-        .map((item) => NodeModel(
-              ip: item['ip'],
-              host: item['host'],
-              passwd: item['passwd'],
-              port: item['port'],
-            ))
-        .toList();
+    // final list = dataList
+    //     .map((item) => NodeModel(
+    //           ip: item['ip'],
+    //           host: item['host'],
+    //           passwd: item['passwd'],
+    //           port: item['port'],
+    //         ))
+    //     .toList();
 
     emit(state.copyWith(
-        nodeModel: list, menuIndex: 0, nodeIndex: 0, server: '', id: ''));
-    print('SHOW DATA ${list.length}');
+        nodeModel: dataList, menuIndex: 0, nodeIndex: 0, server: '', id: ''));
+    print('SHOW DATA ${dataList}');
   }
 
 /*   Future<void> _addData(AddDataEvent event, Emitter<NodeState> emit) async {

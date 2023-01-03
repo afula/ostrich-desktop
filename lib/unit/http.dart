@@ -7,7 +7,7 @@ class HttpNetwork {
 
   ///网络请求配置
   static final Dio dio = Dio(BaseOptions(
-    connectTimeout: 5000,
+    connectTimeout: 10000,
     receiveTimeout: 3000,
   ));
 

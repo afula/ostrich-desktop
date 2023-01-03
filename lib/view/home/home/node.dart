@@ -13,6 +13,7 @@ import 'dart:convert';
 
 import 'package:window_manager/window_manager.dart';
 
+import '../../../node/models/node_model.dart';
 import '../../../unit/current_page.dart';
 
 class NodeService extends StatefulWidget {
@@ -50,10 +51,10 @@ class _NodeService extends State<NodeService> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("添加服务器"),
-        automaticallyImplyLeading: false,
-      ),
+      // appBar: AppBar(
+      //   title: const Text("添加服务器"),
+      //   automaticallyImplyLeading: false,
+      // ),
       body: BlocBuilder<NodeBloc, NodeState>(
           // bloc:,
 
@@ -108,9 +109,6 @@ class _NodeService extends State<NodeService> {
                       pressedOpacity: .5,
                       onPressed: () {
                         _getServerList();
-                        context.read<NodeBloc>().add(
-                              const UpdateMenuIndexEvent(index: 1),
-                            );
                         print("确定");
                         print(_serverController.text);
                         print(_idController.text);
@@ -155,50 +153,71 @@ class _NodeService extends State<NodeService> {
       Map<String, dynamic> data = json.decode(str);
       if (data["code"] == 200) {
         EasyLoading.showToast("获取服务器配置成功！");
-        rootBundle
-            .loadString("assets/data/socks_auto.json")
-            .then((value) async {
-          Map<String, dynamic> jsonMap = json.decode(value);
-          print(jsonMap);
-          jsonMap["outbounds"][0]["settings"]["address"] =
-              data["ret"]["server"][0]["ip"];
-          jsonMap["outbounds"][0]["settings"]["server_name"] =
-              data["ret"]["server"][0]["host"];
-          jsonMap["outbounds"][0]["settings"]["password"] =
-              data["ret"]["server"][0]["passwd"];
-          jsonMap["outbounds"][0]["settings"]["port"] =
-              data["ret"]["server"][0]["port"];
-          //将配置写入本地
-          //写入latest.json
-          final prefs = await SharedPreferences.getInstance();
-          prefs.setString("server_list", jsonEncode(data["ret"]["server"]));
-          var configDir = prefs.getString("configDir");
-          //没有文件夹则创建文件夹
-          Directory dir = Directory(configDir!);
-          if (!await dir.exists()) {
-            await dir.create(recursive: true);
-          }
-          //如果文件存在则删除
-          File jsonFile = File(dir.path + "/socks_auto.json");
-          var jsonExist = await jsonFile.exists();
-          if (jsonExist) {
-            await jsonFile.delete();
-          }
-          print(!await dir.exists());
-          print(dir.path);
-          var stringJson = json.encode(jsonMap);
-          stringJson = stringJson
-              .replaceAll(
-                  "REPLACE_ME_WITH_HOST", "${data["ret"]["server"][0]["host"]}")
-              .replaceAll(
-                  "REPLACE_ME_WITH_IP", "${data["ret"]["server"][0]["ip"]}");
-          await File(dir.path + "/latest.json").writeAsString(stringJson);
-          Future.delayed(Duration(seconds: 2), () {
-            windowManager.hide();
-            CurrentPage.currentPage = "home_page";
-            Navigator.of(context).pop("savedServerList");
-          });
-        });
+        List<NodeModel> nodeList = [];
+        List  serverList = data["ret"]["server"];
+        for(int item=0;item<serverList.length;item++){
+          NodeModel model =  NodeModel(
+            ip: serverList[item]['ip'].toString(),
+            host: serverList[item]['host'].toString(),
+            passwd: serverList[item]['passwd'].toString(),
+            port: serverList[item]['port'].toString(),
+            country: serverList[item]['country'].toString(),
+            city: serverList[item]['city'].toString(),
+          );
+          nodeList.add(model);
+        }
+        //保存数据
+        context.read<NodeBloc>().add(
+          ShowDataEvent( nodeList:nodeList ),
+        );
+        //页面跳转
+        context.read<NodeBloc>().add(
+          const UpdateMenuIndexEvent(index: 1),
+        );
+        // rootBundle
+        //     .loadString("assets/data/socks_auto.json")
+        //     .then((value) async {
+        //   Map<String, dynamic> jsonMap = json.decode(value);
+        //   print(jsonMap);
+        //   jsonMap["outbounds"][0]["settings"]["address"] =
+        //       data["ret"]["server"][0]["ip"];
+        //   jsonMap["outbounds"][0]["settings"]["server_name"] =
+        //       data["ret"]["server"][0]["host"];
+        //   jsonMap["outbounds"][0]["settings"]["password"] =
+        //       data["ret"]["server"][0]["passwd"];
+        //   jsonMap["outbounds"][0]["settings"]["port"] =
+        //       data["ret"]["server"][0]["port"];
+        //   //将配置写入本地
+        //   //写入latest.json
+        //   final prefs = await SharedPreferences.getInstance();
+        //   prefs.setString("server_list", jsonEncode(data["ret"]["server"]));
+        //   var configDir = prefs.getString("configDir");
+        //   //没有文件夹则创建文件夹
+        //   Directory dir = Directory(configDir!);
+        //   if (!await dir.exists()) {
+        //     await dir.create(recursive: true);
+        //   }
+        //   //如果文件存在则删除
+        //   File jsonFile = File(dir.path + "/socks_auto.json");
+        //   var jsonExist = await jsonFile.exists();
+        //   if (jsonExist) {
+        //     await jsonFile.delete();
+        //   }
+        //   print(!await dir.exists());
+        //   print(dir.path);
+        //   var stringJson = json.encode(jsonMap);
+        //   stringJson = stringJson
+        //       .replaceAll(
+        //           "REPLACE_ME_WITH_HOST", "${data["ret"]["server"][0]["host"]}")
+        //       .replaceAll(
+        //           "REPLACE_ME_WITH_IP", "${data["ret"]["server"][0]["ip"]}");
+        //   await File(dir.path + "/latest.json").writeAsString(stringJson);
+        //   Future.delayed(Duration(seconds: 2), () {
+        //     windowManager.hide();
+        //     CurrentPage.currentPage = "home_page";
+        //     Navigator.of(context).pop("savedServerList");
+        //   });
+        // });
       } else {
         EasyLoading.showToast(data["msg"]);
       }
