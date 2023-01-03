@@ -19,17 +19,17 @@ class NodeState extends Equatable {
       [nodeModel, currentMenuIndex, currentNodeIndex, server, id];
 
   NodeState copyWith({
-    required List<NodeModel> nodeModel,
-    required int menuIndex,
-    required int nodeIndex,
-    required String server,
-    required String id,
+    List<NodeModel>? nodeModel,
+    int? menuIndex,
+    int? nodeIndex,
+    String? server,
+    String? id,
   }) {
     return NodeState(
-        nodeModel: nodeModel,
-        currentMenuIndex: menuIndex,
-        currentNodeIndex: nodeIndex,
-        server: server,
-        id: id);
+        nodeModel: nodeModel??this.nodeModel,
+        currentMenuIndex: menuIndex ?? this.currentMenuIndex,
+        currentNodeIndex: nodeIndex ?? this.currentNodeIndex,
+        server: server ?? this.server,
+        id: id ?? this.id);
   }
 }

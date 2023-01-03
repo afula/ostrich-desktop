@@ -5,19 +5,19 @@ abstract class NodeEvent extends Equatable {
   const NodeEvent();
 }
 
-class ShowDataEvent extends NodeEvent {
+class AddNodeEvent extends NodeEvent {
   @override
   // TODO: implement props
   // List<Object?> get props => throw UnimplementedError();
 final List<NodeModel> nodeList;
 
-const ShowDataEvent({required this.nodeList});
+const AddNodeEvent({required this.nodeList});
 
 @override
 List<Object?> get props => [nodeList];
 
-ShowDataEvent copyWith({List<NodeModel>? nodeList}) {
-  return ShowDataEvent(nodeList: nodeList ?? this.nodeList);
+AddNodeEvent copyWith({List<NodeModel>? nodeList}) {
+  return AddNodeEvent(nodeList: nodeList ?? this.nodeList);
 }
 }
 

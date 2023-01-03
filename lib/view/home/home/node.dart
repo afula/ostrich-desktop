@@ -168,7 +168,7 @@ class _NodeService extends State<NodeService> {
         }
         //保存数据
         context.read<NodeBloc>().add(
-          ShowDataEvent( nodeList:nodeList ),
+          AddNodeEvent( nodeList:nodeList ),
         );
         //页面跳转
         context.read<NodeBloc>().add(

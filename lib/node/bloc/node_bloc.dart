@@ -12,7 +12,7 @@ part 'node_state.dart';
 
 class NodeBloc extends Bloc<NodeEvent, NodeState> {
   NodeBloc() : super(const NodeState(nodeModel: [])) {
-    on<ShowDataEvent>(showData);
+    on<AddNodeEvent>(_addNode);
     // on<AddDataEvent>(_addData);
     on<UpdateNodeEvent>(_updateNode);
     // on<DeleteDataEvent>(_deleteData);
@@ -20,7 +20,7 @@ class NodeBloc extends Bloc<NodeEvent, NodeState> {
     on<UpdateNodeIndexEvent>(_updateNodeIndex);
   }
 
-  Future showData(ShowDataEvent event, Emitter<NodeState> emit) async {
+  Future _addNode(AddNodeEvent event, Emitter<NodeState> emit) async {
     // final dataList = await DBHelper.selectAll(DBHelper.nodeTable);
     final dataList = event.nodeList;
 
@@ -33,8 +33,7 @@ class NodeBloc extends Bloc<NodeEvent, NodeState> {
     //         ))
     //     .toList();
 
-    emit(state.copyWith(
-        nodeModel: dataList, menuIndex: 0, nodeIndex: 0, server: '', id: ''));
+    emit(state.copyWith(nodeModel: dataList));
     print('SHOW DATA ${dataList}');
   }
 
@@ -75,13 +74,9 @@ class NodeBloc extends Bloc<NodeEvent, NodeState> {
     print("_updateIndex event nodes: $newNodes");
 
     emit(state.copyWith(
-        nodeModel: newNodes,
-        menuIndex: state.currentMenuIndex,
-        nodeIndex: state.currentNodeIndex,
-        server: state.server,
-        id: state.id));
-
-    print('_updateNode after emit ${state.nodeModel}');
+      nodeModel: newNodes,
+    ));
+    print('_updateNodeIndex after emit $state');
   }
 
   Future<void> _updateMenuIndex(
@@ -95,17 +90,16 @@ class NodeBloc extends Bloc<NodeEvent, NodeState> {
     //   'port': list.port,
     // });
 
-    final newNodes = [...state.nodeModel];
-    print("_updateIndex event index: $menuIndex");
+    print("_updateMenuIndex event index: $menuIndex");
 
     emit(state.copyWith(
-        nodeModel: newNodes,
-        menuIndex: menuIndex,
-        nodeIndex: state.currentNodeIndex,
-        server: state.server,
-        id: state.id));
+      menuIndex: menuIndex,
+      // nodeIndex: state.currentNodeIndex,
+      // server: state.server,
+      // id: state.id
+    ));
 
-    print('_updateIndex after emit ${state.currentMenuIndex}');
+    print('_updateMenuIndex after emit $state');
   }
 
   Future<void> _updateNodeIndex(
@@ -119,17 +113,16 @@ class NodeBloc extends Bloc<NodeEvent, NodeState> {
     //   'port': list.port,
     // });
 
-    final newNodes = [...state.nodeModel];
-    print("_updateIndex event index: $nodeIndex");
+    print("_updateNodeIndex event index: $nodeIndex");
 
     emit(state.copyWith(
-        nodeModel: newNodes,
-        menuIndex: state.currentMenuIndex,
-        nodeIndex: nodeIndex,
-        server: state.server,
-        id: state.id));
+      // menuIndex: state.currentMenuIndex,
+      nodeIndex: nodeIndex,
+      // server: state.server,
+      // id: state.id
+    ));
 
-    print('_updateIndex after emit ${state.currentNodeIndex}');
+    print('_updateNodeIndex after emit $state');
   }
 
 /*   Future<void> _deleteData(
