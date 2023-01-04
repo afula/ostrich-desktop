@@ -51,7 +51,7 @@ class MyApp extends StatelessWidget {
           "/main_menu_server_list": (context) => const ServerlistPage(),
           // "/home_page": (context) => const MyHomePage(title: "Ostrich")
         },
-        home: const MyHomePage(title: 'Ostrich'),
+        home: const HomePage(),
         builder: EasyLoading.init(),
       ),
     );

@@ -22,7 +22,6 @@ class ServerlistPage extends StatefulWidget {
 }
 
 class _ServerlistPageState extends State<ServerlistPage> {
-  late final nativeApi = getDyLibApi();
   MaterialAccentColor launchColor = Colors.deepOrangeAccent;
   @override
   Widget build(BuildContext context) {

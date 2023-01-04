@@ -38,7 +38,6 @@ class InitBeforeLaunch {
       await File(dir.path + "/tun2socks.exe").writeAsBytes(bytesTun.buffer
           .asUint8List(bytesTun.offsetInBytes, bytesTun.lengthInBytes));
 
-      late final nativeApi = getDyLibApi();
       // await nativeApi.requireAdministrator();
       if (await nativeApi.isElevated()) {
         print("adminstrator");

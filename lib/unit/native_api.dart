@@ -19,4 +19,5 @@ import 'dart:io' as io;
       : DynamicLibrary.open(nativeFile.path));
   return api;
 }
+late final nativeApi = getDyLibApi();
 
