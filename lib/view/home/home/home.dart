@@ -49,19 +49,11 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener  
           label: isConnected ? "关闭" : "启动",
           onClick: (menuItem) async {
             if (isConnected) {
-              // setState(() {
-              //   menuItem.label = "开启";
-              //   iconPath = 'assets/images/tray_icon_gray.ico';
-              // });
               _winKillPid();
               context.read<NodeBloc>().add(
                 const UpdateConnectStatusEvent(status: false),
               );
             } else {
-              // setState(() {
-              //   menuItem.label = "关闭";
-              //   iconPath = 'assets/images/tray_icon.ico';
-              // });
               _ostrichStart();
               context.read<NodeBloc>().add(
                 const UpdateConnectStatusEvent(status: true),
