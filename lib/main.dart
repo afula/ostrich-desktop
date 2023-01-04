@@ -9,17 +9,13 @@ import 'package:window_manager/window_manager.dart';
 import 'view/home.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'node/bloc/node_bloc.dart';
-import 'package:ostrich_flutter/unit/native_api.dart';
 
 void main() async {
-  
-  InitBeforeLaunch().platformInit();
-  late final nativeApi = getDyLibApi();
-  await nativeApi.requireAdministrator();
   WidgetsFlutterBinding.ensureInitialized();
   await windowManager.ensureInitialized();
   await windowManager.setPreventClose(true);
   await windowManager.setMinimizable(true);
+  InitBeforeLaunch().platformInit();
   HttpNetwork.init();
   WindowOptions windowOptions = const WindowOptions(
     size: Size(800, 600),

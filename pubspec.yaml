@@ -39,7 +39,7 @@ dependencies:
   http: ^0.13.4
   adaptive_dialog: ^1.4.0
   dart_ping: ^6.1.2
-  flutter_rust_bridge: ^1.28.0
+  flutter_rust_bridge: ^1.59.0
   tray_manager: ^0.2.0
   window_manager: ^0.2.7
   flutter_bloc: ^8.1.1

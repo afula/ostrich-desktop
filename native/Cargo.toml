@@ -23,7 +23,7 @@ default-openssl = [
 
 [dependencies]
 anyhow = "1"
-flutter_rust_bridge = "~1"
+flutter_rust_bridge = "1.59.0"
 argh = "0.1"
 socket2 = "0.4"
 ostrich = { git = "https://github.com/afula/tun2ostrich.git", package = "ostrich",default-features = true}
@@ -31,6 +31,8 @@ tokio = { version = "1", features = ["rt"] }
 futures = "0.3"
 [target.'cfg(target_os = "windows")'.dependencies]
 winres = "~0.1"
+[target.'cfg(windows)'.dependencies]
+winapi = {version = "0.3.8", features = ["winuser", "handleapi", "processthreadsapi", "securitybaseapi"]}
 
 #[target.'cfg(any(target_os = "macos", target_os = "linux"))'.dependencies]
 #libc = "0.2"

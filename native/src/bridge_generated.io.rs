@@ -31,6 +31,11 @@ pub extern "C" fn wire_require_administrator(port_: i64) {
     wire_require_administrator_impl(port_)
 }
 
+#[no_mangle]
+pub extern "C" fn wire_is_elevated(port_: i64) {
+    wire_is_elevated_impl(port_)
+}
+
 // Section: allocate functions
 
 #[no_mangle]

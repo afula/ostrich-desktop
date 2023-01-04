@@ -1342,6 +1342,7 @@ dependencies = [
  "socket2",
  "surge-ping",
  "tokio",
+ "winapi",
  "winres",
 ]
 

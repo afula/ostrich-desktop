@@ -4,7 +4,8 @@ import 'package:flutter/services.dart';
 import 'package:process_run/shell.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:async';
-
+import 'package:ostrich_flutter/unit/native_api.dart';
+import 'dart:async';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class InitBeforeLaunch {
@@ -18,7 +19,8 @@ class InitBeforeLaunch {
           await rootBundle.load("assets/bin/windows/misc/wintun.dll");
       var bytesTun =
           await rootBundle.load("assets/bin/windows/misc/tun2socks.exe");
-      var bytesNative = await rootBundle.load("assets/bin/windows/misc/native.dll");
+      var bytesNative =
+          await rootBundle.load("assets/bin/windows/misc/native.dll");
       Map<String, String> envVars = Platform.environment;
       var home = envVars['UserProfile'].toString();
       //没有文件夹则创建文件夹
@@ -35,6 +37,14 @@ class InitBeforeLaunch {
           .asUint8List(bytesNative.offsetInBytes, bytesNative.lengthInBytes));
       await File(dir.path + "/tun2socks.exe").writeAsBytes(bytesTun.buffer
           .asUint8List(bytesTun.offsetInBytes, bytesTun.lengthInBytes));
+
+      late final nativeApi = getDyLibApi();
+      // await nativeApi.requireAdministrator();
+      if (await nativeApi.isElevated()) {
+        print("adminstrator");
+      } else {
+        print("plain user");
+      }
     } catch (e) {
       print(e);
     }
