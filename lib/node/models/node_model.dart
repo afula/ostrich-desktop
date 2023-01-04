@@ -13,33 +13,30 @@ class NodeModel extends Equatable {
   final String country;
   final String city;
 
-  const NodeModel({
-    required this.ip,
-    required this.host,
-    required this.passwd,
-    required this.port,
-    required this.country,
-    required this.city
-  });
+  const NodeModel(
+      {required this.ip,
+      required this.host,
+      required this.passwd,
+      required this.port,
+      required this.country,
+      required this.city});
 
-  NodeModel copyWith({
-    String? ip,
-    String? host,
-    String? passwd,
-    String? port,
-    String? country,
-    String? city
-  }) {
+  NodeModel copyWith(
+      {required String? ip,
+      required String? host,
+      required String? passwd,
+      required String? port,
+      required String? country,
+      required String? city}) {
     return NodeModel(
-      ip: ip ?? this.ip,
-      host: host ?? this.host,
-      passwd: passwd ?? this.passwd,
-      port: port ?? this.port,
-      country: country ?? this.country,
-      city: city ?? this.city
-    );
+        ip: ip ?? this.ip,
+        host: host ?? this.host,
+        passwd: passwd ?? this.passwd,
+        port: port ?? this.port,
+        country: country ?? this.country,
+        city: city ?? this.city);
   }
 
   @override
-  List<Object?> get props => [ip, host, passwd, port,country,city];
+  List<Object?> get props => [ip, host, passwd, port, country, city];
 }

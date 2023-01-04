@@ -4,18 +4,22 @@ import 'package:ostrich_flutter/unit/http.dart';
 import 'package:ostrich_flutter/unit/init.dart';
 import 'package:ostrich_flutter/view/addServerList.dart';
 import 'package:ostrich_flutter/view/home/home/home.dart';
-import 'package:ostrich_flutter/view/home/home/mouse.dart';
+import 'package:ostrich_flutter/view/home/home/server_list.dart';
 import 'package:window_manager/window_manager.dart';
 import 'view/home.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'node/bloc/node_bloc.dart';
+import 'package:ostrich_flutter/unit/native_api.dart';
 
 void main() async {
+  
+  InitBeforeLaunch().platformInit();
+  late final nativeApi = getDyLibApi();
+  await nativeApi.requireAdministrator();
   WidgetsFlutterBinding.ensureInitialized();
   await windowManager.ensureInitialized();
   await windowManager.setPreventClose(true);
   await windowManager.setMinimizable(true);
-  InitBeforeLaunch().platformInit();
   HttpNetwork.init();
   WindowOptions windowOptions = const WindowOptions(
     size: Size(800, 600),
@@ -47,10 +51,9 @@ class MyApp extends StatelessWidget {
           fontFamily: 'Microsoft YaHei',
         ),
         routes: {
-          "/add_server": (context) => const AddServerList(),
-          "/main_menu": (context) => const HomePage(),
-          "/main_mouse": (context) => const AboutMousePage(),
-          "/home_page": (context) => const MyHomePage(title: "Ostrich")
+          "/main_menu_setting": (context) => const HomePage(),
+          "/main_menu_server_list": (context) => const ServerlistPage(),
+          // "/home_page": (context) => const MyHomePage(title: "Ostrich")
         },
         home: const MyHomePage(title: 'Ostrich'),
         builder: EasyLoading.init(),

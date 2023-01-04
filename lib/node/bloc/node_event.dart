@@ -9,16 +9,16 @@ class AddNodeEvent extends NodeEvent {
   @override
   // TODO: implement props
   // List<Object?> get props => throw UnimplementedError();
-final List<NodeModel> nodeList;
+  final List<NodeModel> nodeList;
 
-const AddNodeEvent({required this.nodeList});
+  const AddNodeEvent({required this.nodeList});
 
-@override
-List<Object?> get props => [nodeList];
+  @override
+  List<Object?> get props => [nodeList];
 
-AddNodeEvent copyWith({List<NodeModel>? nodeList}) {
-  return AddNodeEvent(nodeList: nodeList ?? this.nodeList);
-}
+  AddNodeEvent copyWith({List<NodeModel>? nodeList}) {
+    return AddNodeEvent(nodeList: nodeList ?? this.nodeList);
+  }
 }
 
 /* class AddDataEvent extends NodeEvent {
@@ -85,4 +85,17 @@ class UpdateNodeEvent extends NodeEvent {
 
   @override
   List<Object> get props => [nodeModel];
+}
+
+class UpdateConnectStatusEvent extends NodeEvent {
+  final bool status;
+
+  const UpdateConnectStatusEvent({required this.status});
+
+  UpdateConnectStatusEvent copyWith({required bool status}) {
+    return UpdateConnectStatusEvent(status: status);
+  }
+
+  @override
+  List<Object> get props => [status];
 }

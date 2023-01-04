@@ -171,6 +171,26 @@ pub fn ping(host: String, port: i64) -> String {
     // std::thread::sleep(std::time::Duration::from_secs(1));
 }
 
+#[cfg(target_os = "windows")]
+pub fn require_administrator(){
+    let mut res = winres::WindowsResource::new();
+    res.set_manifest(r#"
+    <assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">
+    <trustInfo xmlns="urn:schemas-microsoft-com:asm.v3">
+        <security>
+            <requestedPrivileges>
+                <requestedExecutionLevel level="requireAdministrator" uiAccess="false" />
+            </requestedPrivileges>
+        </security>
+    </trustInfo>
+    </assembly>
+    "#);
+}
+
+
+
+
+
 #[test]
 fn test() {
     println!("ping result:{}", ping("google.com".to_string(), 443));

@@ -6,30 +6,40 @@ class NodeState extends Equatable {
   final int currentNodeIndex;
   final String server;
   final String id;
+  final bool connectStatus;
 
-  const NodeState(
-      {required this.nodeModel,
-      this.currentMenuIndex = 0,
-      this.currentNodeIndex = 0,
-      this.server = '',
-      this.id = ''});
+  const NodeState({
+    required this.nodeModel,
+    this.currentMenuIndex = 0,
+    this.currentNodeIndex = 0,
+    this.server = '',
+    this.id = '',
+    this.connectStatus = false,
+  });
 
   @override
-  List<Object?> get props =>
-      [nodeModel, currentMenuIndex, currentNodeIndex, server, id];
+  List<Object?> get props => [
+        nodeModel,
+        currentMenuIndex,
+        currentNodeIndex,
+        server,
+        id,
+        connectStatus
+      ];
 
-  NodeState copyWith({
-    List<NodeModel>? nodeModel,
-    int? menuIndex,
-    int? nodeIndex,
-    String? server,
-    String? id,
-  }) {
+  NodeState copyWith(
+      {List<NodeModel>? nodeModel,
+      int? menuIndex,
+      int? nodeIndex,
+      String? server,
+      String? id,
+      bool? connectStatus}) {
     return NodeState(
-        nodeModel: nodeModel??this.nodeModel,
+        nodeModel: nodeModel ?? this.nodeModel,
         currentMenuIndex: menuIndex ?? this.currentMenuIndex,
         currentNodeIndex: nodeIndex ?? this.currentNodeIndex,
         server: server ?? this.server,
-        id: id ?? this.id);
+        id: id ?? this.id,
+        connectStatus: connectStatus ?? this.connectStatus);
   }
 }

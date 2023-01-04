@@ -13,6 +13,7 @@ import 'package:logger/logger.dart';
 import 'package:ostrich_flutter/unit/current_page.dart';
 import 'package:ostrich_flutter/unit/native_api.dart';
 import 'package:ostrich_flutter/unit/serverConfig.dart';
+import 'package:ostrich_flutter/view/home/home/home.dart';
 import 'package:ostrich_flutter/widget/open_dialog.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:process_run/cmd_run.dart';
@@ -52,7 +53,7 @@ class _MyHomePageState extends State<MyHomePage>
     // CurrentPage.currentPage = "home_page";
     trayManager.addListener(this);
     windowManager.addListener(this);
-    _isExistServerList();
+    // _isExistServerList();
     _buildTray();
   }
 
@@ -74,16 +75,16 @@ class _MyHomePageState extends State<MyHomePage>
                 isConnected = false;
               });
               _winKillPid();
-              _buildTray();
+              // _buildTray();
             } else {
               setState(() {
                 menuItem.label = "关闭";
                 isConnected = true;
               });
               _ostrichStart();
-              _buildTray();
-              String iconPath = 'assets/images/tray_icon.ico';
-              await trayManager.setIcon(iconPath);
+              // _buildTray();
+              // String iconPath = 'assets/images/tray_icon.ico';
+              // await trayManager.setIcon(iconPath);
             }
           }),
       //  tray_manager.MenuItem.separator(),
@@ -92,6 +93,7 @@ class _MyHomePageState extends State<MyHomePage>
       // ),
       tray_manager.MenuItem.separator(),
       tray_manager.MenuItem(label: "设置"),
+      tray_manager.MenuItem.separator(),
       tray_manager.MenuItem(label: "退出程序"),
     ];
     String iconPath = 'assets/images/tray_icon_gray.ico';
@@ -99,7 +101,7 @@ class _MyHomePageState extends State<MyHomePage>
     await trayManager.setContextMenu(tray_manager.Menu(items: trayItem));
   }
 
-  _isExistServerList() async {
+/*   _isExistServerList() async {
 /*     final prefs = await SharedPreferences.getInstance();
     //如果没有配置
     // prefs.remove("server_list");
@@ -117,10 +119,10 @@ class _MyHomePageState extends State<MyHomePage>
       _dealServerListData();
     } */
 
-    Navigator.of(context).pushNamed("/main_menu");
+    Navigator.of(context).pushNamed("/main_menu_setting");
   }
-
-  _dealServerListData() async {
+ */
+/*   _dealServerListData() async {
     final prefs = await SharedPreferences.getInstance();
     final serverList = prefs.getString("server_list");
     List serverData = json.decode(serverList.toString());
@@ -136,7 +138,7 @@ class _MyHomePageState extends State<MyHomePage>
       chooseItem = serverData[0]["country"] + "--" + serverData[0]["city"];
       serverDropMenuItem = menuItem;
     });
-  }
+  } */
 
   _winKillPid() async {
     try {
@@ -283,39 +285,41 @@ class _MyHomePageState extends State<MyHomePage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(widget.title),
-            const Text("  "),
-            Text(
-              connectStatus,
-              style: const TextStyle(fontSize: 12),
-            )
+        appBar: AppBar(
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(widget.title),
+/*               const Text("  "),
+              Text(
+                connectStatus,
+                style: const TextStyle(fontSize: 12),
+              ) */
+            ],
+          ),
+          centerTitle: true,
+          // leading: IconButton(
+          //   icon: const Icon(Icons.add),
+          //   tooltip: "添加服务器配置",
+          //   onPressed: () {
+          //     print("click 添加服务器");
+          //     Navigator.of(context).pushNamed("/add_server");
+          //   },
+          // ),
+          actions: <Widget>[
+            IconButton(
+              icon: const Icon(Icons.wifi),
+              tooltip: "检查代理网络连接",
+              onPressed: () {
+                _checkNetwork();
+              },
+            ),
+            //增加清除密码的功能
           ],
         ),
-        centerTitle: true,
-        // leading: IconButton(
-        //   icon: const Icon(Icons.add),
-        //   tooltip: "添加服务器配置",
-        //   onPressed: () {
-        //     print("click 添加服务器");
-        //     Navigator.of(context).pushNamed("/add_server");
-        //   },
-        // ),
-        actions: <Widget>[
-          IconButton(
-            icon: const Icon(Icons.wifi),
-            tooltip: "检查代理网络连接",
-            onPressed: () {
-              _checkNetwork();
-            },
-          ),
-          //增加清除密码的功能
-        ],
-      ),
-      body: Center(
+        body: const HomePage()
+
+/*       Center(
         child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -357,7 +361,7 @@ class _MyHomePageState extends State<MyHomePage>
                               }
                             }),
                         tray_manager.MenuItem.separator(),
-                        tray_manager.MenuItem(label: "服务器列表"),
+                        // tray_manager.MenuItem(label: "服务器列表"),
                         tray_manager.MenuItem.separator(),
                         tray_manager.MenuItem(label: "设置"),
                         tray_manager.MenuItem(label: "退出程序"),
@@ -378,18 +382,18 @@ class _MyHomePageState extends State<MyHomePage>
             ],
           )
         ]),
-      ),
-      // floatingActionButton: FloatingActionButton(
-      //   onPressed: () {
-      //    _winStartOrClose();
-      //   },
-      //   tooltip: "点击开启或者关闭代理",
-      //   backgroundColor: launchColor,
-      //   child: const Icon(
-      //     Icons.airplanemode_active,
-      //   ),
-      // ), // This trailing comma makes auto-formatting nicer for build methods.
-    );
+      ), */
+        // floatingActionButton: FloatingActionButton(
+        //   onPressed: () {
+        //    _winStartOrClose();
+        //   },
+        //   tooltip: "点击开启或者关闭代理",
+        //   backgroundColor: launchColor,
+        //   child: const Icon(
+        //     Icons.airplanemode_active,
+        //   ),
+        // ), // This trailing comma makes auto-formatting nicer for build methods.
+        );
   }
 
   @override
@@ -446,7 +450,7 @@ class _MyHomePageState extends State<MyHomePage>
           //       });
           // }
 
-          Navigator.of(context).pushNamed("/main_menu");
+          Navigator.of(context).pushNamed("/main_menu_setting");
 
           await windowManager.show();
           await windowManager.focus();

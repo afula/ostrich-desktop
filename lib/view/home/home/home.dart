@@ -3,7 +3,7 @@ import 'package:window_manager/window_manager.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ostrich_flutter/node/bloc/node_bloc.dart';
 import 'node.dart';
-import 'mouse.dart';
+import 'server_list.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -13,7 +13,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> with WindowListener {
-  final List<Widget> _pages = [const NodeService(), const AboutMousePage()];
+  final List<Widget> _pages = [const NodeService(), const ServerlistPage()];
 
   final List<String> _titles = [
     '设置',
