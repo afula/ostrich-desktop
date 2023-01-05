@@ -1,8 +1,8 @@
-# ostrich_flutter
+# ostrich_desktop
 
-A new Flutter project.
+Desktop application for Ostrich.
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+Ostrich is a free useful tool for brothers ans sisters in need.
 
