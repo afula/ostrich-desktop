@@ -164,12 +164,13 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
         builder: (BuildContext dialogContext) {
           return AlertDialog(
             title: const Text('警告'),
-            content: const Text('即将关闭本程序，是否继续？'),
+            content: const Text('即将关闭代理，是否继续？'),
             actions: <Widget>[
               TextButton(
-                child: const Text('取消'),
-                onPressed: () {
+                child: const Text('不关闭'),
+                onPressed: () async {
                   Navigator.of(dialogContext).pop(); // Dismiss alert dialog
+                  await windowManager.hide();
                 },
               ),
               TextButton(
@@ -292,43 +293,11 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
         break;
       case "设置":
         {
-          // if (CurrentPage.currentPage == "home_page") {
-          //   Future getReturnResult =
-          //       Navigator.of(context).pushNamed("/add_server");
-          //   getReturnResult.then((value) => {
-          //         _dealServerListData(),
-          //       });
-          // }
-
           Navigator.of(context).pushNamed("/main_menu_setting");
-
           await windowManager.show();
           await windowManager.focus();
         }
         break;
-/*       case "启动":
-        {
-          // if (CurrentPage.currentPage == "home_page") {
-          //   Future getReturnResult =
-          //       Navigator.of(context).pushNamed("/add_server");
-          //   getReturnResult.then((value) => {
-          //         _dealServerListData(),
-          //       });
-          // }
-          menuItem.label = "关闭";
-        }
-        break;
-      case "关闭":
-        {
-          // if (CurrentPage.currentPage == "home_page") {
-          //   Future getReturnResult =
-          //       Navigator.of(context).pushNamed("/add_server");
-          //   getReturnResult.then((value) => {
-          //         _dealServerListData(),
-          //       });
-          // }
-          menuItem.label = "启动";
-        } */
     }
   }
 

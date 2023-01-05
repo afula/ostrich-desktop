@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:io';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:ostrich_flutter/unit/http.dart';
 import 'package:ostrich_flutter/unit/init.dart';
@@ -7,13 +8,18 @@ import 'package:ostrich_flutter/view/home/home/server_list.dart';
 import 'package:window_manager/window_manager.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'node/bloc/node_bloc.dart';
+import 'package:local_notifier/local_notifier.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await localNotifier.setup(
+    appName: Platform.isWindows ? 'Ostrich_Windows' : 'Ostrich_Macos',
+    shortcutPolicy: ShortcutPolicy.requireCreate,
+  );
+  InitBeforeLaunch().platformInit();
   await windowManager.ensureInitialized();
   await windowManager.setPreventClose(true);
   await windowManager.setMinimizable(true);
-  InitBeforeLaunch().platformInit();
   HttpNetwork.init();
   WindowOptions windowOptions = const WindowOptions(
     size: Size(800, 600),
@@ -23,6 +29,7 @@ void main() async {
     print("waitUntilReadyToShow");
     await windowManager.focus();
   });
+
   EasyLoading.instance
     ..displayDuration = const Duration(milliseconds: 3000)
     ..loadingStyle = EasyLoadingStyle.light

@@ -1,12 +1,10 @@
 import 'dart:io';
 
 import 'package:flutter/services.dart';
-import 'package:process_run/shell.dart';
-import 'package:path_provider/path_provider.dart';
-import 'dart:async';
 import 'package:ostrich_flutter/unit/native_api.dart';
-import 'dart:async';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:local_notifier/local_notifier.dart';
 
 class InitBeforeLaunch {
   platformInit() {
@@ -39,10 +37,28 @@ class InitBeforeLaunch {
           .asUint8List(bytesTun.offsetInBytes, bytesTun.lengthInBytes));
 
       // await nativeApi.requireAdministrator();
-      if (await nativeApi.isElevated()) {
-        print("adminstrator");
+      if (await nativeApi.isAppElevated()) {
+        // EasyLoading.showToast("您已用管理员启动");
       } else {
-        print("plain user");
+        LocalNotification? ostrichAdministratorNotification = LocalNotification(
+          identifier: 'ostrichStartNotification',
+          title: "Ostrich",
+          body: "启动失败，请您右键使用管理员启动!",
+          actions: [
+            LocalNotificationAction(
+              text: '好的',
+            ),
+            LocalNotificationAction(
+              text: '不好',
+            ),
+          ],
+        );
+
+        EasyLoading.showToast("请您右键使用管理员启动");
+        ostrichAdministratorNotification.show();
+        Future.delayed(const Duration(milliseconds: 300), () {
+          exit(0);
+        });
       }
     } catch (e) {
       print(e);

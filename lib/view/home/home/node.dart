@@ -42,19 +42,10 @@ class _NodeService extends State<NodeService> {
       _idController.text = user;
     }
   }
-  // bool toggle = false;
-  //  void _toggle(){ setState(() { toggle = !toggle; });
-  // _getToggleChild(){
-  //   if(toggle){ return  new Text("Toggle one"); }else{ return new MaterialButton(onPressed: (){},child: new Text("Toggle two"),);
-  //    }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   title: const Text("添加服务器"),
-      //   automaticallyImplyLeading: false,
-      // ),
       body: BlocBuilder<NodeBloc, NodeState>(
           // bloc:,
 
@@ -107,7 +98,7 @@ class _NodeService extends State<NodeService> {
                       child: const Text("确定 "),
                       color: Colors.blueGrey,
                       pressedOpacity: .5,
-                      onPressed: () {
+                      onPressed: () async {
                         _getServerList();
                         print("确定");
                         print(_serverController.text);
@@ -154,9 +145,9 @@ class _NodeService extends State<NodeService> {
       if (data["code"] == 200) {
         EasyLoading.showToast("获取服务器配置成功！");
         List<NodeModel> nodeList = [];
-        List  serverList = data["ret"]["server"];
-        for(int item=0;item<serverList.length;item++){
-          NodeModel model =  NodeModel(
+        List serverList = data["ret"]["server"];
+        for (int item = 0; item < serverList.length; item++) {
+          NodeModel model = NodeModel(
             ip: serverList[item]['ip'].toString(),
             host: serverList[item]['host'].toString(),
             passwd: serverList[item]['passwd'].toString(),
@@ -168,8 +159,8 @@ class _NodeService extends State<NodeService> {
         }
         //保存数据
         context.read<NodeBloc>().add(
-          AddNodeEvent( nodeList:nodeList ),
-        );
+              AddNodeEvent(nodeList: nodeList),
+            );
         rootBundle
             .loadString("assets/data/socks_auto.json")
             .then((value) async {
@@ -211,8 +202,8 @@ class _NodeService extends State<NodeService> {
           Future.delayed(Duration(seconds: 2), () {
             //页面跳转
             context.read<NodeBloc>().add(
-              const UpdateMenuIndexEvent(index: 1),
-            );
+                  const UpdateMenuIndexEvent(index: 1),
+                );
           });
         });
       } else {

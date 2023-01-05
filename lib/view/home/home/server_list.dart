@@ -1,5 +1,4 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -11,9 +10,9 @@ import '../../../node/models/node_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tray_manager/tray_manager.dart';
 import 'package:tray_manager/tray_manager.dart' as tray_manager;
-// import 'package:window_manager/window_manager.dart';
 import 'package:process_run/cmd_run.dart';
 import '../../../unit/serverConfig.dart';
+import 'package:local_notifier/local_notifier.dart';
 
 class ServerlistPage extends StatefulWidget {
   const ServerlistPage({Key? key}) : super(key: key);
@@ -24,16 +23,38 @@ class ServerlistPage extends StatefulWidget {
 
 class _ServerlistPageState extends State<ServerlistPage> {
   MaterialAccentColor launchColor = Colors.deepOrangeAccent;
+  LocalNotification? ostrichStartNotification = LocalNotification(
+    identifier: 'ostrichStartNotification',
+    title: "Ostrich",
+    body: "代理已启动!",
+/*     actions: [
+      LocalNotificationAction(
+        text: 'Yes',
+      ),
+      LocalNotificationAction(
+        text: 'No',
+      ),
+    ], */
+  );
+
+  LocalNotification? ostrichCloseNotification = LocalNotification(
+    identifier: 'ostrichCloseNotification',
+    title: "Ostrich",
+    body: "代理已关闭!",
+/*     actions: [
+      LocalNotificationAction(
+        text: 'Yes',
+      ),
+      LocalNotificationAction(
+        text: 'No',
+      ),
+    ], */
+  );
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: BlocBuilder<NodeBloc, NodeState>(builder: (context, state) {
-/*         return Container(
-            margin: const EdgeInsets.all(10),
-            child: ListView(
-              children: getList(state),
-            )); */
-
         return Column(
           mainAxisAlignment: MainAxisAlignment.start,
           // crossAxisAlignment: CrossAxisAlignment.center,
@@ -44,13 +65,16 @@ class _ServerlistPageState extends State<ServerlistPage> {
               ),
             ),
             Container(
-                padding: const EdgeInsets.only(bottom: 40),
+                padding: const EdgeInsets.only(bottom: 70),
                 child: CupertinoButton(
                     child: const Text("切换 "),
-                    color: Colors.blueAccent,
+                    color: state.connectStatus
+                        ? Colors.greenAccent
+                        : Colors.blueAccent,
                     pressedOpacity: .5,
                     onPressed: () async {
                       _buildTray();
+                      ostrichStartNotification?.show();
                     }))
           ],
         );
@@ -82,10 +106,10 @@ class _ServerlistPageState extends State<ServerlistPage> {
   }
 
   _winKillPid() async {
-    // bool isConnected = state.connectStatus;
     NodeState state = context.read<NodeBloc>().state;
     try {
       // Execute!
+      EasyLoading.showSuccess("正在清理旧的代理");
       await nativeApi.leafShutdown();
       final runInShell = Platform.isWindows;
       var cmd2 = ProcessCmd('taskkill', ['/IM', 'tun2socks.exe', '/F'],
@@ -96,12 +120,9 @@ class _ServerlistPageState extends State<ServerlistPage> {
         // isConnected = false;
         // connectStatus = "未连接";
       });
-/*       context.read<NodeBloc>().add(
-            const UpdateConnectStatusEvent(status: false),
-          ); */
-      EasyLoading.showSuccess("已关闭");
+      EasyLoading.showSuccess("已经清理旧的代理");
     } catch (e) {
-      EasyLoading.showInfo("关闭失败" + e.toString());
+      EasyLoading.showInfo("经清理旧的代理失败" + e.toString());
     }
   }
 
@@ -112,80 +133,30 @@ class _ServerlistPageState extends State<ServerlistPage> {
     print("node: $node, index: ${state.currentNodeIndex}");
     ServerFileCofig.changeConfig(node);
     print("build tray, connect status $isConnected");
-    if (isConnected) {
-      _winKillPid();
+    /*   if (isConnected) {
+      await _winKillPid();
       print("_ostrichStart");
-
       Future.delayed(Duration(milliseconds: 1500), () {});
-
       _ostrichStart();
       context.read<NodeBloc>().add(
             const UpdateConnectStatusEvent(status: true),
           );
-      // _buildTray(state);
     } else {
-/*               context.read<NodeBloc>().add(
-                    const UpdateConnectStatusEvent(status: true),
-                  ); */
       print("_ostrichStart");
       _ostrichStart();
       context.read<NodeBloc>().add(
             const UpdateConnectStatusEvent(status: true),
           );
-    }
+    } */
+    print("_winKillPid");
+    await _winKillPid();
+    print("_ostrichStart");
+    Future.delayed(Duration(milliseconds: 1500), () {});
+    _ostrichStart();
+    context.read<NodeBloc>().add(
+          const UpdateConnectStatusEvent(status: true),
+        );
     _closetTray();
-/*     List<tray_manager.MenuItem> trayItem = [
-      tray_manager.MenuItem(
-          label: isConnected ? " 关闭" : " 启动",
-          onClick: (menuItem) async {
-            if (isConnected) {
-              _winKillPid(state);
-              setState(() {
-                menuItem.label = " 启动";
-                // isConnected = false;
-              });
-
-/*               print("_ostrichStart");
-              NodeModel node = state.nodeModel[state.currentNodeIndex];
-              ServerFileCofig.changeConfig(node);
-
-              _ostrichStart(state); */
-
-              context.read<NodeBloc>().add(
-                    const UpdateConnectStatusEvent(status: false),
-                  );
-              _resetTray(state);
-            } else {
-/*               context.read<NodeBloc>().add(
-                    const UpdateConnectStatusEvent(status: true),
-                  ); */
-              print("_ostrichStart");
-              _ostrichStart(state);
-              setState(() {
-                menuItem.label = " 关闭";
-                // isConnected = true;
-              });
-              context.read<NodeBloc>().add(
-                    const UpdateConnectStatusEvent(status: true),
-                  );
-              _resetTray(state);
-              // String iconPath = 'assets/images/tray_icon.ico';
-              // await trayManager.setIcon(iconPath);
-            }
-          }),
-      //  tray_manager.MenuItem.separator(),
-      //  tray_manager.MenuItem(
-      //   label: "服务器列表"
-      // ),
-      tray_manager.MenuItem.separator(),
-      tray_manager.MenuItem(label: " 设置"),
-      tray_manager.MenuItem.separator(),
-      tray_manager.MenuItem(label: "退出程序"),
-    ];
-    await trayManager.setIcon(isConnected
-        ? 'assets/images/tray_icon.ico'
-        : 'assets/images/tray_icon_gray.ico');
-    await trayManager.setContextMenu(tray_manager.Menu(items: trayItem)); */
   }
 
   _startTray() async {
@@ -195,20 +166,13 @@ class _ServerlistPageState extends State<ServerlistPage> {
           onClick: (menuItem) async {
             print("_ostrichStart");
             _ostrichStart();
-/*               setState(() {
-                menuItem.label = " 关闭";
-                // isConnected = true;
-              }); */
             context.read<NodeBloc>().add(
                   const UpdateConnectStatusEvent(status: true),
                 );
-
+            EasyLoading.showToast("已启动代理");
+            ostrichStartNotification?.show();
             _closetTray();
           }),
-      //  tray_manager.MenuItem.separator(),
-      //  tray_manager.MenuItem(
-      //   label: "服务器列表"
-      // ),
       tray_manager.MenuItem.separator(),
       tray_manager.MenuItem(label: " 设置"),
       tray_manager.MenuItem.separator(),
@@ -223,32 +187,14 @@ class _ServerlistPageState extends State<ServerlistPage> {
       tray_manager.MenuItem(
           label: " 关闭",
           onClick: (menuItem) async {
-/*               context.read<NodeBloc>().add(
-                    const UpdateConnectStatusEvent(status: true),
-                  ); */
             _winKillPid();
-/*               setState(() {
-                menuItem.label = " 启动";
-                // isConnected = false;
-              }); */
-
-/*               print("_ostrichStart");
-              NodeModel node = state.nodeModel[state.currentNodeIndex];
-              ServerFileCofig.changeConfig(node);
-
-              _ostrichStart(state); */
-
             context.read<NodeBloc>().add(
                   const UpdateConnectStatusEvent(status: false),
                 );
+            EasyLoading.showToast("已关闭代理");
+            ostrichCloseNotification?.show();
             _startTray();
-            // String iconPath = 'assets/images/tray_icon.ico';
-            // await trayManager.setIcon(iconPath);
           }),
-      //  tray_manager.MenuItem.separator(),
-      //  tray_manager.MenuItem(
-      //   label: "服务器列表"
-      // ),
       tray_manager.MenuItem.separator(),
       tray_manager.MenuItem(label: " 设置"),
       tray_manager.MenuItem.separator(),
@@ -265,38 +211,36 @@ class _ServerlistPageState extends State<ServerlistPage> {
     if (isRunning) {
       // 关闭
       _winKillPid();
-    } else {
-      final prefs = await SharedPreferences.getInstance();
-      var configDir = prefs.getString("configDir");
-      Directory dir = Directory(configDir!);
-      var libDir = dir.path.replaceAll("/", "\\");
-      print(libDir);
-      var configPath = "$libDir\\latest.json";
-      var tunPath = "$libDir\\wintun.dll";
-      var socksPath = "$libDir\\tun2socks.exe";
-      const timeout = Duration(seconds: 1);
-      var count = 0;
-      print("ostrich---start--");
-      var result = await nativeApi.leafRun(
-          configPath: configPath,
-          wintunPath: tunPath,
-          tun2SocksPath: socksPath);
-      print("leafRun $result");
-      context.read<NodeBloc>().add(
-            const UpdateConnectStatusEvent(status: true),
-          );
-      Timer.periodic(timeout, (timer) {
-        //callback function
-        //1s 回调一次
-        count = count + 1;
-        print(count);
-        if (count > 10) {
-          timer.cancel();
-          // EasyLoading.showToast("连接失败");
-        }
-        // _checkConnect(timer);
-      });
     }
+    EasyLoading.showToast("正在启动新的代理");
+    final prefs = await SharedPreferences.getInstance();
+    var configDir = prefs.getString("configDir");
+    Directory dir = Directory(configDir!);
+    var libDir = dir.path.replaceAll("/", "\\");
+    print(libDir);
+    var configPath = "$libDir\\latest.json";
+    var tunPath = "$libDir\\wintun.dll";
+    var socksPath = "$libDir\\tun2socks.exe";
+    const timeout = Duration(seconds: 1);
+    var count = 0;
+    print("ostrich---start--");
+    var result = nativeApi.leafRun(
+        configPath: configPath, wintunPath: tunPath, tun2SocksPath: socksPath);
+    print("leafRun $result");
+    context.read<NodeBloc>().add(
+          const UpdateConnectStatusEvent(status: true),
+        );
+    Timer.periodic(timeout, (timer) {
+      //callback function
+      //1s 回调一次
+      count = count + 1;
+      print(count);
+      if (count > 10) {
+        timer.cancel();
+        // EasyLoading.showToast("连接失败");
+      }
+      _checkConnect(timer);
+    });
   }
 
   _checkConnect(Timer timer) async {
@@ -310,8 +254,8 @@ class _ServerlistPageState extends State<ServerlistPage> {
       context.read<NodeBloc>().add(
             const UpdateConnectStatusEvent(status: true),
           );
-      EasyLoading.showToast("已开启");
-      print("代理已开启");
+      EasyLoading.showToast("已启动新的代理");
+      print("已启动代理");
       timer.cancel();
     } else {
       setState(() {
@@ -322,7 +266,7 @@ class _ServerlistPageState extends State<ServerlistPage> {
       context.read<NodeBloc>().add(
             const UpdateConnectStatusEvent(status: false),
           );
-      EasyLoading.showToast("开启失败");
+      EasyLoading.showToast("启动新的代理失败");
       print("代理没有开启 server");
     }
   }
