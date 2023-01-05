@@ -105,6 +105,16 @@ fn wire_is_elevated_impl(port_: MessagePort) {
         move || move |task_callback| Ok(is_elevated()),
     )
 }
+fn wire_is_app_elevated_impl(port_: MessagePort) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "is_app_elevated",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || move |task_callback| Ok(is_app_elevated()),
+    )
+}
 // Section: wrapper structs
 
 // Section: static checks

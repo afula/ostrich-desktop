@@ -1,45 +1,43 @@
-use std::net::IpAddr;
-use std::time::Duration;
-use surge_ping::{Client, Config, ICMP, IcmpPacket};
 use anyhow::Result;
 use futures::future::join_all;
-use tokio::time;
 #[cfg(not(test))]
 use log::{info, warn};
+use std::net::IpAddr;
+use std::time::Duration;
+use surge_ping::{Client, Config, IcmpPacket, ICMP};
+use tokio::time;
 
 #[cfg(test)]
 use std::{println as info, println as warn};
 
-
-
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-async fn multi_pings() -> Result<()>{
-        let ips = [
-            "114.114.114.114",
-            "8.8.8.8",
-            "39.156.69.79",
-            "172.217.26.142",
-            "240c::6666",
-            "2a02:930::ff76",
-            "114.114.114.114",
-        ];
-        let client_v4 = Client::new(&Config::default()).await?;
-        let client_v6 = Client::new(&Config::builder().kind(ICMP::V6).build()).await?;
-        let mut tasks = Vec::new();
-        for ip in &ips {
-            match ip.parse() {
-                Ok(IpAddr::V4(addr)) => {
-                    tasks.push(tokio::spawn(ping(client_v4.clone(), IpAddr::V4(addr))))
-                }
-                Ok(IpAddr::V6(addr)) => {
-                    tasks.push(tokio::spawn(ping(client_v6.clone(), IpAddr::V6(addr))))
-                }
-                Err(e) => println!("{} parse to ipaddr error: {}", ip, e),
+async fn multi_pings() -> Result<()> {
+    let ips = [
+        "114.114.114.114",
+        "8.8.8.8",
+        "39.156.69.79",
+        "172.217.26.142",
+        "240c::6666",
+        "2a02:930::ff76",
+        "114.114.114.114",
+    ];
+    let client_v4 = Client::new(&Config::default()).await?;
+    let client_v6 = Client::new(&Config::builder().kind(ICMP::V6).build()).await?;
+    let mut tasks = Vec::new();
+    for ip in &ips {
+        match ip.parse() {
+            Ok(IpAddr::V4(addr)) => {
+                tasks.push(tokio::spawn(ping(client_v4.clone(), IpAddr::V4(addr))))
             }
+            Ok(IpAddr::V6(addr)) => {
+                tasks.push(tokio::spawn(ping(client_v6.clone(), IpAddr::V6(addr))))
+            }
+            Err(e) => println!("{} parse to ipaddr error: {}", ip, e),
         }
+    }
 
-        join_all(tasks).await;
-        Ok(()) as Result<()>
+    join_all(tasks).await;
+    Ok(()) as Result<()>
 }
 
 // Ping an address 5 times， and print output message（interval 1s）

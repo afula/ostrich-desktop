@@ -38,6 +38,10 @@ abstract class Native {
   Future<bool> isElevated({dynamic hint});
 
   FlutterRustBridgeTaskConstMeta get kIsElevatedConstMeta;
+
+  Future<bool> isAppElevated({dynamic hint});
+
+  FlutterRustBridgeTaskConstMeta get kIsAppElevatedConstMeta;
 }
 
 class NativeImpl implements Native {
@@ -152,6 +156,22 @@ class NativeImpl implements Native {
   FlutterRustBridgeTaskConstMeta get kIsElevatedConstMeta =>
       const FlutterRustBridgeTaskConstMeta(
         debugName: "is_elevated",
+        argNames: [],
+      );
+
+  Future<bool> isAppElevated({dynamic hint}) {
+    return _platform.executeNormal(FlutterRustBridgeTask(
+      callFfi: (port_) => _platform.inner.wire_is_app_elevated(port_),
+      parseSuccessData: _wire2api_bool,
+      constMeta: kIsAppElevatedConstMeta,
+      argValues: [],
+      hint: hint,
+    ));
+  }
+
+  FlutterRustBridgeTaskConstMeta get kIsAppElevatedConstMeta =>
+      const FlutterRustBridgeTaskConstMeta(
+        debugName: "is_app_elevated",
         argNames: [],
       );
 
@@ -415,6 +435,20 @@ class NativeWire implements FlutterRustBridgeWireBase {
           'wire_is_elevated');
   late final _wire_is_elevated =
       _wire_is_elevatedPtr.asFunction<void Function(int)>();
+
+  void wire_is_app_elevated(
+    int port_,
+  ) {
+    return _wire_is_app_elevated(
+      port_,
+    );
+  }
+
+  late final _wire_is_app_elevatedPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>(
+          'wire_is_app_elevated');
+  late final _wire_is_app_elevated =
+      _wire_is_app_elevatedPtr.asFunction<void Function(int)>();
 
   ffi.Pointer<wire_uint_8_list> new_uint_8_list_0(
     int len,

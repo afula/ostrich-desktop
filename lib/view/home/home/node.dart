@@ -160,7 +160,7 @@ class _NodeService extends State<NodeService> {
             ip: serverList[item]['ip'].toString(),
             host: serverList[item]['host'].toString(),
             passwd: serverList[item]['passwd'].toString(),
-            port: serverList[item]['port'].toString(),
+            port: serverList[item]['port'],
             country: serverList[item]['country'].toString(),
             city: serverList[item]['city'].toString(),
           );

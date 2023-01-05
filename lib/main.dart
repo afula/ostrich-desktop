@@ -2,11 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:ostrich_flutter/unit/http.dart';
 import 'package:ostrich_flutter/unit/init.dart';
-import 'package:ostrich_flutter/view/addServerList.dart';
 import 'package:ostrich_flutter/view/home/home/home.dart';
 import 'package:ostrich_flutter/view/home/home/server_list.dart';
 import 'package:window_manager/window_manager.dart';
-import 'view/home.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'node/bloc/node_bloc.dart';
 

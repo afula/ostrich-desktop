@@ -9,7 +9,7 @@ class NodeModel extends Equatable {
   final String ip;
   final String host;
   final String passwd;
-  final String port;
+  final int port;
   final String country;
   final String city;
 
@@ -25,7 +25,7 @@ class NodeModel extends Equatable {
       {required String? ip,
       required String? host,
       required String? passwd,
-      required String? port,
+      required int? port,
       required String? country,
       required String? city}) {
     return NodeModel(
