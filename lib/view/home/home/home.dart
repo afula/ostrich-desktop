@@ -47,20 +47,20 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
           onClick: (menuItem) async {
             if (isConnected) {
               _winKillPid();
-              setState(() {
+/*               setState(() {
                 menuItem.label = " 启动";
                 // isConnected = false;
-              });
+              }); */
               context.read<NodeBloc>().add(
                     const UpdateConnectStatusEvent(status: false),
                   );
               await _buildTray();
             } else {
               _ostrichStart();
-              setState(() {
+/*               setState(() {
                 menuItem.label = " 关闭";
                 // isConnected = true;
-              });
+              }); */
               context.read<NodeBloc>().add(
                     const UpdateConnectStatusEvent(status: true),
                   );
@@ -177,7 +177,13 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
                 child: const Text('关闭'),
                 onPressed: () async {
                   Navigator.of(dialogContext).pop(); // Dismiss alert dialog
-                  await windowManager.destroy();
+                  var running = await nativeApi.isRunning();
+                  if (running) {
+                    await _winKillPid();
+                  }
+                  Future.delayed(const Duration(milliseconds: 1500), () {
+                    exit(0);
+                  });
                 },
               ),
             ],
@@ -284,9 +290,9 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
         {
           var running = await nativeApi.isRunning();
           if (running) {
-            _winKillPid();
+            await _winKillPid();
           }
-          Future.delayed(Duration(milliseconds: 1500), () {
+          Future.delayed(const Duration(milliseconds: 1500), () {
             exit(0);
           });
         }
