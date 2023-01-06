@@ -92,10 +92,27 @@ class UpdateConnectStatusEvent extends NodeEvent {
 
   const UpdateConnectStatusEvent({required this.status});
 
-  UpdateConnectStatusEvent copyWith({required bool status}) {
+  UpdateConnectStatusEvent copyWith({
+    required bool status,
+  }) {
     return UpdateConnectStatusEvent(status: status);
   }
 
   @override
   List<Object> get props => [status];
+}
+
+class UpdateConnectedNodeEvent extends NodeEvent {
+  final String node;
+
+  const UpdateConnectedNodeEvent({required this.node});
+
+  UpdateConnectedNodeEvent copyWith({
+    required String node,
+  }) {
+    return UpdateConnectedNodeEvent(node: node);
+  }
+
+  @override
+  List<Object> get props => [node];
 }

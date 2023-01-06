@@ -12,6 +12,7 @@ class NodeBloc extends Bloc<NodeEvent, NodeState> {
     on<AddNodeEvent>(_addNode);
     on<UpdateNodeEvent>(_updateNode);
     on<UpdateConnectStatusEvent>(_updateConnectedStatus);
+    on<UpdateConnectedNodeEvent>(_updateConnectedNode);
     on<UpdateMenuIndexEvent>(_updateMenuIndex);
     on<UpdateNodeIndexEvent>(_updateNodeIndex);
   }
@@ -50,9 +51,13 @@ class NodeBloc extends Bloc<NodeEvent, NodeState> {
   Future<void> _updateConnectedStatus(
       UpdateConnectStatusEvent event, Emitter<NodeState> emit) async {
     bool status = event.status;
-    emit(state.copyWith(
-      connectStatus: status,
-    ));
+    emit(state.copyWith(connectStatus: status));
+  }
+
+  Future<void> _updateConnectedNode(
+      UpdateConnectedNodeEvent event, Emitter<NodeState> emit) async {
+    String node = event.node;
+    emit(state.copyWith(connectedNode: node));
   }
 } 
 

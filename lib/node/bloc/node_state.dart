@@ -7,15 +7,16 @@ class NodeState extends Equatable {
   final String server;
   final String id;
   final bool connectStatus;
+  final String connectedNode;
 
-  const NodeState({
-    required this.nodeModel,
-    this.currentMenuIndex = 0,
-    this.currentNodeIndex = 0,
-    this.server = '',
-    this.id = '',
-    this.connectStatus = false,
-  });
+  const NodeState(
+      {required this.nodeModel,
+      this.currentMenuIndex = 0,
+      this.currentNodeIndex = 0,
+      this.server = '',
+      this.id = '',
+      this.connectStatus = false,
+      this.connectedNode = ''});
 
   @override
   List<Object?> get props => [
@@ -24,7 +25,8 @@ class NodeState extends Equatable {
         currentNodeIndex,
         server,
         id,
-        connectStatus
+        connectStatus,
+        connectedNode
       ];
 
   NodeState copyWith(
@@ -33,13 +35,15 @@ class NodeState extends Equatable {
       int? nodeIndex,
       String? server,
       String? id,
-      bool? connectStatus}) {
+      bool? connectStatus,
+      String? connectedNode}) {
     return NodeState(
         nodeModel: nodeModel ?? this.nodeModel,
         currentMenuIndex: menuIndex ?? this.currentMenuIndex,
         currentNodeIndex: nodeIndex ?? this.currentNodeIndex,
         server: server ?? this.server,
         id: id ?? this.id,
-        connectStatus: connectStatus ?? this.connectStatus);
+        connectStatus: connectStatus ?? this.connectStatus,
+        connectedNode: connectedNode ?? this.connectedNode);
   }
 }

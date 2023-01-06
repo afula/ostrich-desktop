@@ -67,7 +67,27 @@ class _ServerlistPageState extends State<ServerlistPage> {
             Container(
                 padding: const EdgeInsets.only(bottom: 70),
                 child: CupertinoButton(
-                    child: const Text("切换 "),
+                    child: state.connectStatus
+                        ? RichText(
+                            textAlign: TextAlign.center,
+                            text: TextSpan(
+                              text: '切换 ',
+                              style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 17,
+                                  color: Colors.black),
+                              children: <TextSpan>[
+                                TextSpan(
+                                    text: '\n已连接: ${state.connectedNode}',
+                                    style: const TextStyle(
+                                        // fontStyle: FontStyle.italic,
+                                        fontSize: 12,
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.w100)),
+                              ],
+                            ),
+                          )
+                        : const Text("切换 "),
                     color: state.connectStatus
                         ? Colors.greenAccent
                         : Colors.blueAccent,
@@ -150,12 +170,17 @@ class _ServerlistPageState extends State<ServerlistPage> {
     } */
     print("_winKillPid");
     await _winKillPid();
-    print("_ostrichStart");
+
     Future.delayed(Duration(milliseconds: 1500), () {});
-    _ostrichStart();
     context.read<NodeBloc>().add(
           const UpdateConnectStatusEvent(status: true),
         );
+    context.read<NodeBloc>().add(
+          UpdateConnectedNodeEvent(node: "${node.country}-${node.city}"),
+        );
+    print("_ostrichStart: ${node.country}-${node.city}");
+    _ostrichStart();
+
     _closetTray();
   }
 
