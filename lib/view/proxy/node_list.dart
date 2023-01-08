@@ -84,7 +84,8 @@ class _NodelistPageState extends State<NodelistPage> {
                                   color: Colors.black),
                               children: <TextSpan>[
                                 TextSpan(
-                                    text: '\n已连接: ${state.connectedNode}',
+                                    text:
+                                        '\n已连接: ${state.connectedNode.country}-${state.connectedNode.city}',
                                     style: const TextStyle(
                                         // fontStyle: FontStyle.italic,
                                         fontSize: 12,
@@ -99,6 +100,14 @@ class _NodelistPageState extends State<NodelistPage> {
                         : Colors.blueAccent,
                     pressedOpacity: .5,
                     onPressed: () async {
+                      if (state.connectedNode.ip ==
+                          state.nodeModel[state.currentNodeIndex].ip) {
+                        EasyLoading.showSuccess(
+                            "您已经连接: ${state.connectedNode.country}-${state.connectedNode.city}, 无需切换！",
+                            maskType: EasyLoadingMaskType.clear);
+                        return;
+                      }
+                      print("switch node");
                       _switchNode();
                       ostrichSwitchNotification?.show();
                     }))
@@ -161,7 +170,7 @@ class _NodelistPageState extends State<NodelistPage> {
           const UpdateConnectStatusEvent(status: true),
         );
     context.read<NodeBloc>().add(
-          UpdateConnectedNodeEvent(node: "${node.country}-${node.city}"),
+          UpdateConnectedNodeEvent(node: node),
         );
     print("_ostrichStart: ${node.country}-${node.city}");
     _ostrichStart();
@@ -289,7 +298,7 @@ class _NodelistPageState extends State<NodelistPage> {
 
     NodeModel node = state.nodeModel[state.currentNodeIndex];
     context.read<NodeBloc>().add(
-          UpdateConnectedNodeEvent(node: "${node.country}-${node.city}"),
+          UpdateConnectedNodeEvent(node: node),
         );
     context.read<NodeBloc>().add(
           const UpdateConnectStatusEvent(status: true),

@@ -103,12 +103,12 @@ class UpdateConnectStatusEvent extends NodeEvent {
 }
 
 class UpdateConnectedNodeEvent extends NodeEvent {
-  final String node;
+  final NodeModel node;
 
   const UpdateConnectedNodeEvent({required this.node});
 
   UpdateConnectedNodeEvent copyWith({
-    required String node,
+    required NodeModel node,
   }) {
     return UpdateConnectedNodeEvent(node: node);
   }

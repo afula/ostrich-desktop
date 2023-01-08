@@ -56,7 +56,7 @@ class NodeBloc extends Bloc<NodeEvent, NodeState> {
 
   Future<void> _updateConnectedNode(
       UpdateConnectedNodeEvent event, Emitter<NodeState> emit) async {
-    String node = event.node;
+    NodeModel node = event.node;
     emit(state.copyWith(connectedNode: node));
   }
 } 

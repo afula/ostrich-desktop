@@ -7,7 +7,7 @@ class NodeState extends Equatable {
   final String server;
   final String id;
   final bool connectStatus;
-  final String connectedNode;
+  final NodeModel connectedNode;
 
   const NodeState(
       {required this.nodeModel,
@@ -16,7 +16,8 @@ class NodeState extends Equatable {
       this.server = '',
       this.id = '',
       this.connectStatus = false,
-      this.connectedNode = ''});
+      this.connectedNode = const NodeModel(
+          city: '', country: '', host: '', ip: '', passwd: '', port: 0)});
 
   @override
   List<Object?> get props => [
@@ -36,7 +37,7 @@ class NodeState extends Equatable {
       String? server,
       String? id,
       bool? connectStatus,
-      String? connectedNode}) {
+      NodeModel? connectedNode}) {
     return NodeState(
         nodeModel: nodeModel ?? this.nodeModel,
         currentMenuIndex: menuIndex ?? this.currentMenuIndex,
