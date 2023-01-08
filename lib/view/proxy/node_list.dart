@@ -107,7 +107,6 @@ class _NodelistPageState extends State<NodelistPage> {
                             maskType: EasyLoadingMaskType.clear);
                         return;
                       }
-                      print("switch node");
                       _switchNode();
                       ostrichSwitchNotification?.show();
                     }))
