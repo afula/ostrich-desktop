@@ -11,25 +11,21 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'dart:convert';
 
-import 'package:window_manager/window_manager.dart';
-
 import '../../../node/models/node_model.dart';
-import '../../../unit/current_page.dart';
 
-class NodeService extends StatefulWidget {
-  const NodeService({Key? key}) : super(key: key);
+class LoginService extends StatefulWidget {
+  const LoginService({Key? key}) : super(key: key);
   @override
-  State<NodeService> createState() => _NodeService();
+  State<LoginService> createState() => _LoginService();
 }
 
-class _NodeService extends State<NodeService> {
+class _LoginService extends State<LoginService> {
   final TextEditingController _serverController = TextEditingController();
   final TextEditingController _idController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    CurrentPage.currentPage = "server_page";
     _getSaveValue();
   }
 
