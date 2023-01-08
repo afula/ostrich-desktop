@@ -41,7 +41,7 @@ class InitBeforeLaunch {
         // EasyLoading.showToast("您已用管理员启动");
       } else {
         LocalNotification? ostrichAdministratorNotification = LocalNotification(
-          identifier: 'ostrichStartNotification',
+          identifier: 'ostrichAdministratorNotification',
           title: "Ostrich",
           body: "启动失败，请您右键使用管理员启动!",
           actions: [
@@ -57,7 +57,7 @@ class InitBeforeLaunch {
         EasyLoading.showToast("请您右键使用管理员启动");
         ostrichAdministratorNotification.show();
         Future.delayed(const Duration(milliseconds: 300), () {
-          exit(0);
+          // exit(0);
         });
       }
     } catch (e) {

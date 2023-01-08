@@ -4,6 +4,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:ostrich_flutter/unit/http.dart';
 import 'package:ostrich_flutter/unit/init.dart';
 import 'package:ostrich_flutter/view/home/home/home.dart';
+import 'package:ostrich_flutter/view/home/home/node.dart';
 import 'package:ostrich_flutter/view/home/home/server_list.dart';
 import 'package:window_manager/window_manager.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -54,7 +55,7 @@ class MyApp extends StatelessWidget {
         routes: {
           "/main_menu_setting": (context) => const HomePage(),
           "/main_menu_server_list": (context) => const ServerlistPage(),
-          // "/home_page": (context) => const MyHomePage(title: "Ostrich")
+          "/node_service": (context) => const NodeService()
         },
         home: const HomePage(),
         builder: EasyLoading.init(),

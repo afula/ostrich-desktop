@@ -5,7 +5,7 @@
 list(APPEND FLUTTER_PLUGIN_LIST
   local_notifier
   screen_retriever
-  tray_manager
+  system_tray
   window_manager
 )
 

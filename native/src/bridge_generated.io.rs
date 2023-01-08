@@ -41,6 +41,11 @@ pub extern "C" fn wire_is_app_elevated(port_: i64) {
     wire_is_app_elevated_impl(port_)
 }
 
+#[no_mangle]
+pub extern "C" fn wire_native_notification(port_: i64) {
+    wire_native_notification_impl(port_)
+}
+
 // Section: allocate functions
 
 #[no_mangle]

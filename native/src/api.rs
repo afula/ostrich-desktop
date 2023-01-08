@@ -3,7 +3,7 @@ use std::net::{SocketAddr, ToSocketAddrs};
 use std::os::raw::c_char;
 use std::path::Path;
 use std::time::Duration;
-
+use notify_rust::Notification;
 use socket2::{Domain, Socket, Type};
 /// No error.
 pub const ERR_OK: i32 = 0;
@@ -302,6 +302,15 @@ pub fn is_app_elevated() -> bool {
 
     _is_app_elevated().unwrap_or(false)
 }
+
+pub fn native_notification(){
+    Notification::new()
+    .summary("Firefox News")
+    .appname("Ostrich")
+    .body("This will almost look like a real firefox notification.")
+    .icon("firefox")
+    .show().unwrap();
+} 
 
 #[test]
 fn test() {

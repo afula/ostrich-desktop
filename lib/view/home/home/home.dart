@@ -6,14 +6,18 @@ import 'package:process_run/cmd_run.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart' hide MenuItem;
 import 'package:flutter/material.dart';
-import 'package:tray_manager/tray_manager.dart';
+// import 'package:tray_manager/tray_manager.dart';
 import 'package:window_manager/window_manager.dart';
-import 'package:tray_manager/tray_manager.dart' as tray_manager;
+// import 'package:tray_manager/tray_manager.dart' as tray_manager;
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ostrich_flutter/node/bloc/node_bloc.dart';
 import 'node.dart';
 import 'server_list.dart';
+import '../../../node/models/node_model.dart';
+import '../../../unit/utils.dart';
+
+import 'package:system_tray/system_tray.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -23,7 +27,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
   final List<Widget> _pages = [const NodeService(), const ServerlistPage()];
-  String iconPath = 'assets/images/tray_icon_gray.ico';
+  // String iconPath = 'assets/images/tray_icon_gray.ico';
   int _currentIndex = 0;
   final List<String> _titles = [
     '设置',
@@ -39,10 +43,10 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
     NodeState state = context.read<NodeBloc>().state;
     bool isConnected = state.connectStatus;
 
-    print(isConnected);
+    tray_manager.MenuItem menuItem = tray_manager.MenuItem.separator();
 
-    List<tray_manager.MenuItem> trayItem = [
-      tray_manager.MenuItem(
+    if (state.nodeModel.isNotEmpty) {
+      menuItem = tray_manager.MenuItem(
           label: isConnected ? "关闭" : "启动",
           onClick: (menuItem) async {
             if (isConnected) {
@@ -54,7 +58,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
               context.read<NodeBloc>().add(
                     const UpdateConnectStatusEvent(status: false),
                   );
-              await _buildTray();
+              _buildTray();
             } else {
               _ostrichStart();
 /*               setState(() {
@@ -64,9 +68,13 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
               context.read<NodeBloc>().add(
                     const UpdateConnectStatusEvent(status: true),
                   );
-              await _buildTray();
+              _buildTray();
             }
-          }),
+          });
+    }
+
+    List<tray_manager.MenuItem> trayItem = [
+      menuItem,
       tray_manager.MenuItem.separator(),
       tray_manager.MenuItem(label: "设置"),
       tray_manager.MenuItem.separator(),
@@ -87,55 +95,87 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
           runInShell: runInShell);
       await runCmd(cmd2, stdout: stdout);
       // _buildTray();
-      EasyLoading.showSuccess("已关闭");
+      EasyLoading.showSuccess("已关闭代理");
+      ostrichCloseNotification();
     } catch (e) {
-      EasyLoading.showInfo("关闭失败" + e.toString());
+      EasyLoading.showInfo("关闭代理失败" + e.toString());
     }
   }
 
   _ostrichStart() async {
+    NodeState state = context.read<NodeBloc>().state;
     var isRunning = await nativeApi.isRunning();
+    print("isRunning $isRunning");
     if (isRunning) {
       // 关闭
       _winKillPid();
-    } else {
-      final prefs = await SharedPreferences.getInstance();
-      var configDir = prefs.getString("configDir");
-      Directory dir = Directory(configDir!);
-      var libDir = dir.path.replaceAll("/", "\\");
-      print(libDir);
-      var configPath = "$libDir\\latest.json";
-      var tunPath = "$libDir\\wintun.dll";
-      var socksPath = "$libDir\\tun2socks.exe";
-      const timeout = Duration(seconds: 1);
-      var count = 0;
-
-      print("ostrich---start--");
-      await nativeApi.leafRun(
-          configPath: configPath,
-          wintunPath: tunPath,
-          tun2SocksPath: socksPath);
     }
+    EasyLoading.showToast("正在启动新的代理");
+    final prefs = await SharedPreferences.getInstance();
+    var configDir = prefs.getString("configDir");
+    Directory dir = Directory(configDir!);
+    var libDir = dir.path.replaceAll("/", "\\");
+    print(libDir);
+    var configPath = "$libDir\\latest.json";
+    var tunPath = "$libDir\\wintun.dll";
+    var socksPath = "$libDir\\tun2socks.exe";
+    const timeout = Duration(seconds: 1);
+    var count = 0;
+    print("888888888888888888888888888 ostrich---start--");
+    var result = nativeApi.leafRun(
+        configPath: configPath, wintunPath: tunPath, tun2SocksPath: socksPath);
+    print("leafRun $result");
+    NodeModel node = state.nodeModel[state.currentNodeIndex];
+    context.read<NodeBloc>().add(
+          UpdateConnectedNodeEvent(node: "${node.country}-${node.city}"),
+        );
+    context.read<NodeBloc>().add(
+          const UpdateConnectStatusEvent(status: true),
+        );
+    nativeApi.nativeNotification(); //TODO 多次触发
+
+    Timer.periodic(timeout, (timer) {
+      //callback function
+      //1s 回调一次
+      count = count + 1;
+      print(count);
+      if (count > 10) {
+        timer.cancel();
+        context.read<NodeBloc>().add(
+              const UpdateConnectStatusEvent(status: false),
+            );
+        EasyLoading.showToast("启动新的代理失败");
+        // EasyLoading.showToast("连接失败");
+      }
+      _checkConnect(timer);
+      // ostrichStartNotification();//TODO 多次触发
+    });
   }
 
   _checkConnect(Timer timer) async {
     var running = await nativeApi.isRunning();
     if (running) {
+      // setState(() {
+      //   launchColor = Colors.greenAccent;
+      //   // isConnected = true;
+      //   // connectStatus = "已连接";
+      // });
       context.read<NodeBloc>().add(
             const UpdateConnectStatusEvent(status: true),
           );
-      // _buildTray();
-      EasyLoading.showToast("已开启");
-      print("代理已开启");
+      EasyLoading.showToast("已启动新的代理");
+      print("已启动代理");
       timer.cancel();
-    } else {
-      context.read<NodeBloc>().add(
-            const UpdateConnectStatusEvent(status: false),
-          );
-      // _buildTray();
-      EasyLoading.showToast("开启失败");
-      print("代理没有开启 home");
     }
+/*     else {
+      // setState(() {
+      //   launchColor = Colors.deepOrangeAccent;
+      //   // isConnected = false;
+      //   // connectStatus = "未连接";
+      // });
+
+      print("代理没有开启 server");
+    } */
   }
 
   @override
@@ -156,8 +196,12 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
 
   @override
   void onWindowClose() async {
-    bool _isClose = await windowManager.isPreventClose();
-    if (_isClose) {
+    // bool _isClose = await windowManager.isPreventClose();
+    windowManager.hide();
+/*     if (!_isClose) {
+      // Navigator.of(context).pop(); // Dismiss alert dialog
+      await windowManager.hide();
+    } else {
       showDialog<void>(
         context: context,
         // false = user must tap button, true = tap outside dialog
@@ -190,7 +234,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
           );
         },
       );
-    }
+    } */
   }
 
   @override
@@ -266,7 +310,7 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
   void onWindowFocus() {
     print('onWindowFocus');
     // Make sure to call once.
-    setState(() {});
+    // setState(() {});
     // do something
   }
 
@@ -274,12 +318,40 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
   Future<void> onTrayIconMouseDown() async {
     // do something, for example pop up the menu
     print("onTrayIconMouseDown");
-    await windowManager.show();
+    // await windowManager.show();
   }
 
   @override
   void onTrayIconRightMouseUp() {
     // do something
+  }
+
+  _startTray() async {
+    List<tray_manager.MenuItem> trayItem = [
+      tray_manager.MenuItem(
+        label: "启动",
+      ),
+      tray_manager.MenuItem.separator(),
+      tray_manager.MenuItem(label: "设置"),
+      tray_manager.MenuItem.separator(),
+      tray_manager.MenuItem(label: "退出程序"),
+    ];
+    await trayManager.setIcon('assets/images/tray_icon_gray.ico');
+    await trayManager.setContextMenu(tray_manager.Menu(items: trayItem));
+  }
+
+  _closetTray() async {
+    List<tray_manager.MenuItem> trayItem = [
+      tray_manager.MenuItem(
+        label: "关闭",
+      ),
+      tray_manager.MenuItem.separator(),
+      tray_manager.MenuItem(label: "设置"),
+      tray_manager.MenuItem.separator(),
+      tray_manager.MenuItem(label: "退出程序"),
+    ];
+    await trayManager.setIcon('assets/images/tray_icon.ico');
+    await trayManager.setContextMenu(tray_manager.Menu(items: trayItem));
   }
 
   @override
@@ -292,18 +364,39 @@ class _HomePageState extends State<HomePage> with TrayListener, WindowListener {
           if (running) {
             await _winKillPid();
           }
-          Future.delayed(const Duration(milliseconds: 1500), () {
+          exit(0);
+          /*          Future.delayed(const Duration(milliseconds: 100), () {
             exit(0);
-          });
+          }); */
         }
-        break;
       case "设置":
         {
-          Navigator.of(context).pushNamed("/main_menu_setting");
           await windowManager.show();
           await windowManager.focus();
+          Navigator.of(context).pushNamed("/main_menu_setting");
         }
         break;
+/*       case "启动":
+        {
+          print("_ostrichStart");
+          _ostrichStart();
+          context.read<NodeBloc>().add(
+                const UpdateConnectStatusEvent(status: true),
+              );
+          // EasyLoading.showToast("已启动代理");
+          _closetTray();
+        }
+        break;
+      case "关闭":
+        {
+          _winKillPid();
+          context.read<NodeBloc>().add(
+                const UpdateConnectStatusEvent(status: false),
+              );
+          // EasyLoading.showToast("已关闭代理");
+          _startTray();
+        }
+        break; */
     }
   }
 

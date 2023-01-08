@@ -23,24 +23,11 @@ class ServerlistPage extends StatefulWidget {
 
 class _ServerlistPageState extends State<ServerlistPage> {
   MaterialAccentColor launchColor = Colors.deepOrangeAccent;
-  LocalNotification? ostrichStartNotification = LocalNotification(
-    identifier: 'ostrichStartNotification',
-    title: "Ostrich",
-    body: "代理已启动!",
-/*     actions: [
-      LocalNotificationAction(
-        text: 'Yes',
-      ),
-      LocalNotificationAction(
-        text: 'No',
-      ),
-    ], */
-  );
 
-  LocalNotification? ostrichCloseNotification = LocalNotification(
-    identifier: 'ostrichCloseNotification',
+  LocalNotification? ostrichSwitchNotification = LocalNotification(
+    identifier: 'ostrichSwitchNotification',
     title: "Ostrich",
-    body: "代理已关闭!",
+    body: "代理已经切换!",
 /*     actions: [
       LocalNotificationAction(
         text: 'Yes',
@@ -93,8 +80,8 @@ class _ServerlistPageState extends State<ServerlistPage> {
                         : Colors.blueAccent,
                     pressedOpacity: .5,
                     onPressed: () async {
-                      _buildTray();
-                      ostrichStartNotification?.show();
+                      _switchNode();
+                      ostrichSwitchNotification?.show();
                     }))
           ],
         );
@@ -125,28 +112,7 @@ class _ServerlistPageState extends State<ServerlistPage> {
     return nodeList;
   }
 
-  _winKillPid() async {
-    NodeState state = context.read<NodeBloc>().state;
-    try {
-      // Execute!
-      EasyLoading.showSuccess("正在清理旧的代理");
-      await nativeApi.leafShutdown();
-      final runInShell = Platform.isWindows;
-      var cmd2 = ProcessCmd('taskkill', ['/IM', 'tun2socks.exe', '/F'],
-          runInShell: runInShell);
-      await runCmd(cmd2, stdout: stdout);
-      setState(() {
-        launchColor = Colors.deepOrangeAccent;
-        // isConnected = false;
-        // connectStatus = "未连接";
-      });
-      EasyLoading.showSuccess("已经清理旧的代理");
-    } catch (e) {
-      EasyLoading.showInfo("经清理旧的代理失败" + e.toString());
-    }
-  }
-
-  _buildTray() async {
+  _switchNode() async {
     NodeState state = context.read<NodeBloc>().state;
     bool isConnected = state.connectStatus;
     NodeModel node = state.nodeModel[state.currentNodeIndex];
@@ -168,10 +134,10 @@ class _ServerlistPageState extends State<ServerlistPage> {
             const UpdateConnectStatusEvent(status: true),
           );
     } */
-    print("_winKillPid");
-    await _winKillPid();
+    // print("_winKillPid");
+    // await _winKillPid();
 
-    Future.delayed(Duration(milliseconds: 1500), () {});
+    // Future.delayed(Duration(milliseconds: 1500), () {});
     context.read<NodeBloc>().add(
           const UpdateConnectStatusEvent(status: true),
         );
@@ -179,27 +145,93 @@ class _ServerlistPageState extends State<ServerlistPage> {
           UpdateConnectedNodeEvent(node: "${node.country}-${node.city}"),
         );
     print("_ostrichStart: ${node.country}-${node.city}");
-    _ostrichStart();
+     _ostrichStart();
+    _buildTray();
+  }
 
-    _closetTray();
+  _buildTray() async {
+    NodeState state = context.read<NodeBloc>().state;
+    bool isConnected = state.connectStatus;
+
+    tray_manager.MenuItem menuItem = tray_manager.MenuItem.separator();
+
+    if (state.nodeModel.isNotEmpty) {
+      menuItem = tray_manager.MenuItem(
+          label: isConnected ? "关闭" : "启动",
+          onClick: (menuItem) async {
+            if (isConnected) {
+              _winKillPid();
+/*               setState(() {
+                menuItem.label = " 启动";
+                // isConnected = false;
+              }); */
+              context.read<NodeBloc>().add(
+                    const UpdateConnectStatusEvent(status: false),
+                  );
+               _buildTray();
+            } else {
+               _ostrichStart();
+/*               setState(() {
+                menuItem.label = " 关闭";
+                // isConnected = true;
+              }); */
+              context.read<NodeBloc>().add(
+                    const UpdateConnectStatusEvent(status: true),
+                  );
+               _buildTray();
+            }
+          });
+    }
+
+    List<tray_manager.MenuItem> trayItem = [
+      menuItem,
+      tray_manager.MenuItem.separator(),
+      tray_manager.MenuItem(label: "设置"),
+      tray_manager.MenuItem.separator(),
+      tray_manager.MenuItem(label: "退出程序"),
+    ];
+    await trayManager.setIcon(isConnected
+        ? 'assets/images/tray_icon.ico'
+        : 'assets/images/tray_icon_gray.ico');
+    await trayManager.setContextMenu(tray_manager.Menu(items: trayItem));
+  }
+
+  _closetTray() async {
+    List<tray_manager.MenuItem> trayItem = [
+      tray_manager.MenuItem(
+          label: "关闭",
+          onClick: (menuItem) async {
+            _winKillPid();
+            context.read<NodeBloc>().add(
+                  const UpdateConnectStatusEvent(status: false),
+                );
+            // EasyLoading.showToast("已关闭代理");
+            _startTray();
+          }),
+      tray_manager.MenuItem.separator(),
+      tray_manager.MenuItem(label: "设置"),
+      tray_manager.MenuItem.separator(),
+      tray_manager.MenuItem(label: "退出程序"),
+    ];
+    await trayManager.setIcon('assets/images/tray_icon.ico');
+    await trayManager.setContextMenu(tray_manager.Menu(items: trayItem));
   }
 
   _startTray() async {
     List<tray_manager.MenuItem> trayItem = [
       tray_manager.MenuItem(
-          label: " 启动",
+          label: "启动",
           onClick: (menuItem) async {
             print("_ostrichStart");
-            _ostrichStart();
+            await _ostrichStart();
             context.read<NodeBloc>().add(
                   const UpdateConnectStatusEvent(status: true),
                 );
-            EasyLoading.showToast("已启动代理");
-            ostrichStartNotification?.show();
+            // EasyLoading.showToast("已启动代理");
             _closetTray();
           }),
       tray_manager.MenuItem.separator(),
-      tray_manager.MenuItem(label: " 设置"),
+      tray_manager.MenuItem(label: "设置"),
       tray_manager.MenuItem.separator(),
       tray_manager.MenuItem(label: "退出程序"),
     ];
@@ -207,26 +239,25 @@ class _ServerlistPageState extends State<ServerlistPage> {
     await trayManager.setContextMenu(tray_manager.Menu(items: trayItem));
   }
 
-  _closetTray() async {
-    List<tray_manager.MenuItem> trayItem = [
-      tray_manager.MenuItem(
-          label: " 关闭",
-          onClick: (menuItem) async {
-            _winKillPid();
-            context.read<NodeBloc>().add(
-                  const UpdateConnectStatusEvent(status: false),
-                );
-            EasyLoading.showToast("已关闭代理");
-            ostrichCloseNotification?.show();
-            _startTray();
-          }),
-      tray_manager.MenuItem.separator(),
-      tray_manager.MenuItem(label: " 设置"),
-      tray_manager.MenuItem.separator(),
-      tray_manager.MenuItem(label: "退出程序"),
-    ];
-    await trayManager.setIcon('assets/images/tray_icon.ico');
-    await trayManager.setContextMenu(tray_manager.Menu(items: trayItem));
+  _winKillPid() async {
+    NodeState state = context.read<NodeBloc>().state;
+    try {
+      // Execute!
+      EasyLoading.showSuccess("正在清理旧的代理");
+      await nativeApi.leafShutdown();
+      final runInShell = Platform.isWindows;
+      var cmd2 = ProcessCmd('taskkill', ['/IM', 'tun2socks.exe', '/F'],
+          runInShell: runInShell);
+      await runCmd(cmd2, stdout: stdout);
+      setState(() {
+        launchColor = Colors.deepOrangeAccent;
+        // isConnected = false;
+        // connectStatus = "未连接";
+      });
+      EasyLoading.showSuccess("已经清理旧的代理");
+    } catch (e) {
+      EasyLoading.showInfo("经清理旧的代理失败" + e.toString());
+    }
   }
 
   _ostrichStart() async {
@@ -248,13 +279,18 @@ class _ServerlistPageState extends State<ServerlistPage> {
     var socksPath = "$libDir\\tun2socks.exe";
     const timeout = Duration(seconds: 1);
     var count = 0;
-    print("ostrich---start--");
+    print("7777777777777777777777777777 ostrich---start--");
     var result = nativeApi.leafRun(
         configPath: configPath, wintunPath: tunPath, tun2SocksPath: socksPath);
     print("leafRun $result");
+    NodeModel node = state.nodeModel[state.currentNodeIndex];
+    context.read<NodeBloc>().add(
+          UpdateConnectedNodeEvent(node: "${node.country}-${node.city}"),
+        );
     context.read<NodeBloc>().add(
           const UpdateConnectStatusEvent(status: true),
         );
+
     Timer.periodic(timeout, (timer) {
       //callback function
       //1s 回调一次
@@ -262,36 +298,38 @@ class _ServerlistPageState extends State<ServerlistPage> {
       print(count);
       if (count > 10) {
         timer.cancel();
+        context.read<NodeBloc>().add(
+              const UpdateConnectStatusEvent(status: false),
+            );
+        EasyLoading.showToast("启动新的代理失败");
         // EasyLoading.showToast("连接失败");
       }
       _checkConnect(timer);
+      nativeApi.nativeNotification(); //TODO 多次触发
     });
   }
 
   _checkConnect(Timer timer) async {
     var running = await nativeApi.isRunning();
     if (running) {
-      setState(() {
+/*       setState(() {
         launchColor = Colors.greenAccent;
         // isConnected = true;
         // connectStatus = "已连接";
-      });
-      context.read<NodeBloc>().add(
+      }); */
+/*       context.read<NodeBloc>().add(
             const UpdateConnectStatusEvent(status: true),
-          );
+          ); */
       EasyLoading.showToast("已启动新的代理");
       print("已启动代理");
       timer.cancel();
     } else {
-      setState(() {
+/*       setState(() {
         launchColor = Colors.deepOrangeAccent;
         // isConnected = false;
         // connectStatus = "未连接";
       });
-      context.read<NodeBloc>().add(
-            const UpdateConnectStatusEvent(status: false),
-          );
-      EasyLoading.showToast("启动新的代理失败");
+ */
       print("代理没有开启 server");
     }
   }
