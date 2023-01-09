@@ -149,7 +149,7 @@ class _NodelistPageState extends State<NodelistPage> {
     var isRunning = await nativeApi.isRunning();
     print("isRunning $isRunning");
 
-    if (isRunning) {
+/*     if (isRunning) {
       _winKillPid().then((_) async {
         _ostrichStart();
         context.read<NodeBloc>().add(
@@ -161,8 +161,8 @@ class _NodelistPageState extends State<NodelistPage> {
         _buildTray(true);
       });
       return;
-    }
-/*     if (isRunning) {
+    } */
+    if (isRunning) {
       // 关闭
       try {
         // Execute!
@@ -176,13 +176,24 @@ class _NodelistPageState extends State<NodelistPage> {
 
           ostrichCloseSuccessNotification();
           _ostrichStart();
+          context.read<NodeBloc>().add(
+                const UpdateConnectStatusEvent(status: true),
+              );
+          context.read<NodeBloc>().add(
+                UpdateConnectedNodeEvent(node: node),
+              );
+          _buildTray(true);
         });
       } catch (e) {
         EasyLoading.showInfo("经清理旧的代理失败" + e.toString());
+        context.read<NodeBloc>().add(
+              const UpdateConnectStatusEvent(status: false),
+            );
+        _buildTray(false);
         ostrichCloseFailedNotification();
       }
       return;
-    } */
+    }
 
     /*   if (isConnected) {
       await _winKillPid();
