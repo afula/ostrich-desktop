@@ -146,9 +146,13 @@ pub fn is_running() -> bool {
     ostrich::is_running()
 }
 
+// pub async fn leaf_async_shutdown() -> bool {
+//     ostrich::async_shutdown().await
+// }
 pub fn leaf_shutdown() -> bool {
-    ostrich::shutdown()
+    ostrich::sync_shutdown()
 }
+
 
 pub fn ping(host: String, port: i64) -> String {
     let addr: SocketAddr = format!("{}:{}", &host, port)
