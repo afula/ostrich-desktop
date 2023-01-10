@@ -7,7 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../node/models/node_model.dart';
 
 class ServerFileCofig {
-  static changeConfig(NodeModel node) {
+  static changeConfig(NodeModel node) async{
     Map<String, String> envVars = Platform.environment;
     var home = envVars['UserProfile'].toString();
     //没有文件夹则创建文件夹

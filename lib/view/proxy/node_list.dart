@@ -298,24 +298,23 @@ class _NodelistPageState extends State<NodelistPage> {
         duration: const Duration(seconds: 10)); */
 
     NodeModel node = state.nodeModel[state.currentNodeIndex];
-    ServerFileCofig.changeConfig(node);
-
-    final prefs = await SharedPreferences.getInstance();
-    var configDir = prefs.getString("configDir");
-    Directory dir = Directory(configDir!);
-    var libDir = dir.path.replaceAll("/", "\\");
-    print(libDir);
-    var configPath = "$libDir\\latest.json";
-    var tunPath = "$libDir\\wintun.dll";
-    var socksPath = "$libDir\\tun2socks.exe";
-    const timeout = Duration(seconds: 1);
-    var count = 0;
-    try {
-      nativeApi.leafRun(
-              configPath: configPath,
-              wintunPath: tunPath,
-              tun2SocksPath: socksPath)
-          /*          .then((_) async {
+    ServerFileCofig.changeConfig(node).then((_) async {
+      final prefs = await SharedPreferences.getInstance();
+      var configDir = prefs.getString("configDir");
+      Directory dir = Directory(configDir!);
+      var libDir = dir.path.replaceAll("/", "\\");
+      print(libDir);
+      var configPath = "$libDir\\latest.json";
+      var tunPath = "$libDir\\wintun.dll";
+      var socksPath = "$libDir\\tun2socks.exe";
+      const timeout = Duration(seconds: 1);
+      var count = 0;
+      try {
+        nativeApi.leafRun(
+            configPath: configPath,
+            wintunPath: tunPath,
+            tun2SocksPath: socksPath)
+        /*          .then((_) async {
         Timer.periodic(timeout, (timer) {
           //callback function
           //1s 回调一次
@@ -342,38 +341,41 @@ class _NodelistPageState extends State<NodelistPage> {
             );
         ostrichStartSuccessNotification(); //TODO 多次触发
       }) */
-          ;
+        ;
 
-      Timer.periodic(timeout, (timer) {
-        //callback function
-        //1s 回调一次
-        count = count + 1;
-        if (count > 10) {
-          timer.cancel();
-          context.read<NodeBloc>().add(
-                const UpdateConnectStatusEvent(status: false),
-              );
-          EasyLoading.showToast("启动新的代理失败");
-          ostrichStartFailedNotification();
-          return;
-          // EasyLoading.showToast("连接失败");
-        }
-        _checkConnect(timer);
-        // nativeApi.nativeNotification(); //TODO 多次触发
-      });
+        Timer.periodic(timeout, (timer) {
+          //callback function
+          //1s 回调一次
+          count = count + 1;
+          if (count > 10) {
+            timer.cancel();
+            context.read<NodeBloc>().add(
+              const UpdateConnectStatusEvent(status: false),
+            );
+            EasyLoading.showToast("启动新的代理失败");
+            ostrichStartFailedNotification();
+            return;
+            // EasyLoading.showToast("连接失败");
+          }
+          _checkConnect(timer);
+          // nativeApi.nativeNotification(); //TODO 多次触发
+        });
 
-      context.read<NodeBloc>().add(
-            UpdateConnectedNodeEvent(node: node),
-          );
-      context.read<NodeBloc>().add(
-            const UpdateConnectStatusEvent(status: true),
-          );
-      ostrichStartSuccessNotification(); //TODO 多次触发
+        context.read<NodeBloc>().add(
+          UpdateConnectedNodeEvent(node: node),
+        );
+        context.read<NodeBloc>().add(
+          const UpdateConnectStatusEvent(status: true),
+        );
+        ostrichStartSuccessNotification(); //TODO 多次触发
 
-    } catch (e) {
-      ostrichStartFailedNotification();
-      rethrow;
-    }
+      } catch (e) {
+        ostrichStartFailedNotification();
+        rethrow;
+      }
+
+    });
+
   }
 
   _checkConnect(Timer timer) async {

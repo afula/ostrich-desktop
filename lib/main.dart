@@ -21,6 +21,7 @@ void main() async {
   await windowManager.setPreventClose(true);
   await windowManager.setMinimizable(true);
   HttpNetwork.init();
+  Bloc.observer = AppBlocObserver();
   WindowOptions windowOptions = const WindowOptions(
     size: Size(800, 600),
     center: true,
@@ -60,5 +61,19 @@ class MyApp extends StatelessWidget {
         builder: EasyLoading.init(),
       ),
     );
+  }
+}
+
+class AppBlocObserver extends BlocObserver {
+  @override
+  void onChange(BlocBase bloc, Change change) {
+    super.onChange(bloc, change);
+     print(change);
+  }
+
+  @override
+  void onTransition(Bloc bloc, Transition transition) {
+    super.onTransition(bloc, transition);
+    print(transition);
   }
 }

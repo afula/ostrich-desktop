@@ -41,6 +41,7 @@ class NodeBloc extends Bloc<NodeEvent, NodeState> {
   }
 
   Future<void> _updateNodeIndex(
+
       UpdateNodeIndexEvent event, Emitter<NodeState> emit) async {
     int nodeIndex = event.index;
     emit(state.copyWith(
@@ -53,6 +54,10 @@ class NodeBloc extends Bloc<NodeEvent, NodeState> {
     bool status = event.status;
     emit(state.copyWith(connectStatus: status));
   }
+
+
+
+
 
   Future<void> _updateConnectedNode(
       UpdateConnectedNodeEvent event, Emitter<NodeState> emit) async {
