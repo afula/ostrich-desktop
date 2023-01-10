@@ -26,10 +26,23 @@ class _NodelistPageState extends State<NodelistPage> {
   MaterialAccentColor launchColor = Colors.deepOrangeAccent;
   final Menu _menu = Menu();
   final SystemTray _systemTray = SystemTray();
-  LocalNotification? ostrichSwitchNotification = LocalNotification(
-    identifier: 'ostrichSwitchNotification',
+  LocalNotification? ostrichSwitchSuccessNotification = LocalNotification(
+    identifier: 'ostrichSwitchSuccessNotification',
     title: "Ostrich",
     body: "代理已经切换!",
+/*     actions: [
+      LocalNotificationAction(
+        text: 'Yes',
+      ),
+      LocalNotificationAction(
+        text: 'No',
+      ),
+    ], */
+  );
+  LocalNotification? ostrichSwitchFailedNotification = LocalNotification(
+    identifier: 'ostrichSwitchFailedNotification',
+    title: "Ostrich",
+    body: "代理切换失败!",
 /*     actions: [
       LocalNotificationAction(
         text: 'Yes',
@@ -100,15 +113,20 @@ class _NodelistPageState extends State<NodelistPage> {
                         : Colors.blueAccent,
                     pressedOpacity: .5,
                     onPressed: () async {
-                      if (state.connectedNode.ip ==
-                          state.nodeModel[state.currentNodeIndex].ip) {
+                      if ((state.connectedNode.ip ==
+                              state.nodeModel[state.currentNodeIndex].ip) &&
+                          state.connectStatus) {
                         EasyLoading.showSuccess(
                             "您已经连接: ${state.connectedNode.country}-${state.connectedNode.city}, 无需切换！",
                             maskType: EasyLoadingMaskType.clear);
                         return;
                       }
-                      _switchNode();
-                      ostrichSwitchNotification?.show();
+                      try {
+                        _switchNode();
+                        ostrichSwitchSuccessNotification?.show();
+                      } catch (_) {
+                        ostrichSwitchFailedNotification?.show();
+                      }
                     }))
           ],
         );
@@ -140,49 +158,22 @@ class _NodelistPageState extends State<NodelistPage> {
   }
 
   _switchNode() async {
-    NodeState state = context.read<NodeBloc>().state;
-    bool isConnected = state.connectStatus;
-    NodeModel node = state.nodeModel[state.currentNodeIndex];
-    print("node: $node, index: ${state.currentNodeIndex}");
-    ServerFileCofig.changeConfig(node);
-    print("build tray, connect status $isConnected");
     var isRunning = await nativeApi.isRunning();
-    print("isRunning $isRunning");
-
-/*     if (isRunning) {
-      _winKillPid().then((_) async {
-        _ostrichStart();
-        context.read<NodeBloc>().add(
-              const UpdateConnectStatusEvent(status: true),
-            );
-        context.read<NodeBloc>().add(
-              UpdateConnectedNodeEvent(node: node),
-            );
-        _buildTray(true);
-      });
-      return;
-    } */
     if (isRunning) {
       // 关闭
       try {
         // Execute!
         EasyLoading.showSuccess("正在清理旧的代理");
-        await nativeApi.leafShutdown().then((value) async {
-          EasyLoading.showSuccess("已经清理旧的代理");
+        await nativeApi.leafShutdown().then((_) async {
           final runInShell = Platform.isWindows;
           var cmd2 = ProcessCmd('taskkill', ['/IM', 'tun2socks.exe', '/F'],
               runInShell: runInShell);
-          await runCmd(cmd2, stdout: stdout);
-
-          ostrichCloseSuccessNotification();
-          _ostrichStart();
-          context.read<NodeBloc>().add(
-                const UpdateConnectStatusEvent(status: true),
-              );
-          context.read<NodeBloc>().add(
-                UpdateConnectedNodeEvent(node: node),
-              );
-          _buildTray(true);
+          await runCmd(cmd2, stdout: stdout).then((_) async {
+            EasyLoading.showSuccess("已经清理旧的代理");
+            ostrichCloseSuccessNotification();
+            _ostrichStart();
+            _buildTray(true);
+          });
         });
       } catch (e) {
         EasyLoading.showInfo("经清理旧的代理失败" + e.toString());
@@ -191,39 +182,18 @@ class _NodelistPageState extends State<NodelistPage> {
             );
         _buildTray(false);
         ostrichCloseFailedNotification();
+        rethrow;
       }
       return;
     }
 
-    /*   if (isConnected) {
-      await _winKillPid();
-      print("_ostrichStart");
-      Future.delayed(Duration(milliseconds: 1500), () {});
+    try {
       _ostrichStart();
-      context.read<NodeBloc>().add(
-            const UpdateConnectStatusEvent(status: true),
-          );
-    } else {
-      print("_ostrichStart");
-      _ostrichStart();
-      context.read<NodeBloc>().add(
-            const UpdateConnectStatusEvent(status: true),
-          );
-    } */
-    // print("_winKillPid");
-    // await _winKillPid();
-
-    // Future.delayed(Duration(milliseconds: 1500), () {});
-
-    _ostrichStart();
-    context.read<NodeBloc>().add(
-          const UpdateConnectStatusEvent(status: true),
-        );
-    context.read<NodeBloc>().add(
-          UpdateConnectedNodeEvent(node: node),
-        );
-    print("_ostrichStart: ${node.country}-${node.city}");
-    _buildTray(true);
+      _buildTray(true);
+    } catch (_) {
+      _buildTray(false);
+      rethrow;
+    }
   }
 
   void _buildTray(bool isConnected) async {
@@ -240,27 +210,24 @@ class _NodelistPageState extends State<NodelistPage> {
               label: isConnected ? "关闭" : "启动",
               onClicked: (menuItem) async {
                 if (isConnected) {
-                  print("close");
-                  _winKillPid();
-/*               setState(() {
-                menuItem.label = " 启动";
-                // isConnected = false;
-              }); */
-                  context.read<NodeBloc>().add(
-                        const UpdateConnectStatusEvent(status: false),
-                      );
-                  _buildTray(false);
+                  await nativeApi.leafShutdown().then((_) async {
+                    final runInShell = Platform.isWindows;
+                    var cmd2 = ProcessCmd(
+                        'taskkill', ['/IM', 'tun2socks.exe', '/F'],
+                        runInShell: runInShell);
+                    await runCmd(cmd2, stdout: stdout).then((_) async {
+                      ostrichCloseSuccessNotification();
+                      _buildTray(false);
+                    });
+                  });
                 } else {
-                  print("start");
-                  _ostrichStart();
-/*               setState(() {
-                menuItem.label = " 关闭";
-                // isConnected = true;
-              }); */
-                  context.read<NodeBloc>().add(
-                        const UpdateConnectStatusEvent(status: true),
-                      );
-                  _buildTray(true);
+                  try {
+                    _ostrichStart();
+
+                    _buildTray(true);
+                  } catch (_) {
+                    return;
+                  }
                 }
               },
             ),
@@ -322,7 +289,13 @@ class _NodelistPageState extends State<NodelistPage> {
       // 关闭
       _winKillPid();
     } */
-    EasyLoading.showToast("正在启动新的代理");
+    EasyLoading.showToast("正在启动新的代理,请稍后！",
+        maskType: EasyLoadingMaskType.clear,
+        duration: const Duration(seconds: 10));
+
+    NodeModel node = state.nodeModel[state.currentNodeIndex];
+    ServerFileCofig.changeConfig(node);
+
     final prefs = await SharedPreferences.getInstance();
     var configDir = prefs.getString("configDir");
     Directory dir = Directory(configDir!);
@@ -335,38 +308,68 @@ class _NodelistPageState extends State<NodelistPage> {
     var count = 0;
     try {
       nativeApi.leafRun(
-          configPath: configPath,
-          wintunPath: tunPath,
-          tun2SocksPath: socksPath);
+              configPath: configPath,
+              wintunPath: tunPath,
+              tun2SocksPath: socksPath)
+          /*          .then((_) async {
+        Timer.periodic(timeout, (timer) {
+          //callback function
+          //1s 回调一次
+          count = count + 1;
+          if (count > 10) {
+            timer.cancel();
+            context.read<NodeBloc>().add(
+                  const UpdateConnectStatusEvent(status: false),
+                );
+            EasyLoading.showToast("启动新的代理失败");
+            ostrichStartFailedNotification();
+            return;
+            // EasyLoading.showToast("连接失败");
+          }
+          _checkConnect(timer);
+          // nativeApi.nativeNotification(); //TODO 多次触发
+        });
+
+        context.read<NodeBloc>().add(
+              UpdateConnectedNodeEvent(node: node),
+            );
+        context.read<NodeBloc>().add(
+              const UpdateConnectStatusEvent(status: true),
+            );
+        ostrichStartSuccessNotification(); //TODO 多次触发
+      }) */
+          ;
+
+      Timer.periodic(timeout, (timer) {
+        //callback function
+        //1s 回调一次
+        count = count + 1;
+        if (count > 10) {
+          timer.cancel();
+          context.read<NodeBloc>().add(
+                const UpdateConnectStatusEvent(status: false),
+              );
+          EasyLoading.showToast("启动新的代理失败");
+          ostrichStartFailedNotification();
+          return;
+          // EasyLoading.showToast("连接失败");
+        }
+        _checkConnect(timer);
+        // nativeApi.nativeNotification(); //TODO 多次触发
+      });
+
+      context.read<NodeBloc>().add(
+            UpdateConnectedNodeEvent(node: node),
+          );
+      context.read<NodeBloc>().add(
+            const UpdateConnectStatusEvent(status: true),
+          );
+      ostrichStartSuccessNotification(); //TODO 多次触发
+
     } catch (e) {
       ostrichStartFailedNotification();
+      rethrow;
     }
-
-    NodeModel node = state.nodeModel[state.currentNodeIndex];
-    context.read<NodeBloc>().add(
-          UpdateConnectedNodeEvent(node: node),
-        );
-    context.read<NodeBloc>().add(
-          const UpdateConnectStatusEvent(status: true),
-        );
-
-    Timer.periodic(timeout, (timer) {
-      //callback function
-      //1s 回调一次
-      count = count + 1;
-      if (count > 10) {
-        timer.cancel();
-        context.read<NodeBloc>().add(
-              const UpdateConnectStatusEvent(status: false),
-            );
-        EasyLoading.showToast("启动新的代理失败");
-        ostrichStartFailedNotification();
-        // EasyLoading.showToast("连接失败");
-      }
-      _checkConnect(timer);
-      // nativeApi.nativeNotification(); //TODO 多次触发
-    });
-    ostrichStartSuccessNotification(); //TODO 多次触发
   }
 
   _checkConnect(Timer timer) async {
