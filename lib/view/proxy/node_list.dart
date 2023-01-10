@@ -163,13 +163,14 @@ class _NodelistPageState extends State<NodelistPage> {
       // 关闭
       try {
         // Execute!
-        EasyLoading.showSuccess("正在清理旧的代理");
+        EasyLoading.showToast("正在启动新的代理,请稍后！",
+            maskType: EasyLoadingMaskType.clear,
+            duration: const Duration(seconds: 15));
         await nativeApi.leafShutdown().then((_) async {
           final runInShell = Platform.isWindows;
           var cmd2 = ProcessCmd('taskkill', ['/IM', 'tun2socks.exe', '/F'],
               runInShell: runInShell);
           await runCmd(cmd2, stdout: stdout).then((_) async {
-            EasyLoading.showSuccess("已经清理旧的代理");
             ostrichCloseSuccessNotification();
             _ostrichStart();
             _buildTray(true);
@@ -188,6 +189,9 @@ class _NodelistPageState extends State<NodelistPage> {
     }
 
     try {
+      EasyLoading.showToast("正在启动新的代理,请稍后！",
+          maskType: EasyLoadingMaskType.clear,
+          duration: const Duration(seconds: 15));
       _ostrichStart();
       _buildTray(true);
     } catch (_) {
