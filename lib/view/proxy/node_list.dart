@@ -165,7 +165,7 @@ class _NodelistPageState extends State<NodelistPage> {
         // Execute!
         EasyLoading.showToast("正在启动新的代理,请稍后！",
             maskType: EasyLoadingMaskType.clear,
-            duration: const Duration(seconds: 15));
+            duration: const Duration(seconds: 20));
         await nativeApi.leafShutdown().then((_) async {
           final runInShell = Platform.isWindows;
           var cmd2 = ProcessCmd('taskkill', ['/IM', 'tun2socks.exe', '/F'],
@@ -293,9 +293,9 @@ class _NodelistPageState extends State<NodelistPage> {
       // 关闭
       _winKillPid();
     } */
-    EasyLoading.showToast("正在启动新的代理,请稍后！",
+/*     EasyLoading.showToast("正在启动新的代理,请稍后！",
         maskType: EasyLoadingMaskType.clear,
-        duration: const Duration(seconds: 10));
+        duration: const Duration(seconds: 10)); */
 
     NodeModel node = state.nodeModel[state.currentNodeIndex];
     ServerFileCofig.changeConfig(node);
