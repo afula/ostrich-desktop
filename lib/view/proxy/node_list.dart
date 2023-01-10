@@ -164,7 +164,7 @@ class _NodelistPageState extends State<NodelistPage> {
       // 关闭
       try {
         // Execute!
-        EasyLoading.showToast("正在启动新的代理,请稍后！",
+        EasyLoading.showSuccess("正在启动新的代理,请稍后！",
             maskType: EasyLoadingMaskType.clear,
             duration: const Duration(seconds: 20));
         await nativeApi.leafShutdown().then((_) async {
@@ -190,9 +190,9 @@ class _NodelistPageState extends State<NodelistPage> {
     }
 
     try {
-      EasyLoading.showToast("正在启动新的代理,请稍后！",
+      EasyLoading.showSuccess("正在启动新的代理,请稍后！",
           maskType: EasyLoadingMaskType.clear,
-          duration: const Duration(seconds: 15));
+          duration: const Duration(seconds: 20));
       _ostrichStart();
       _buildTray(true);
     } catch (_) {
@@ -222,6 +222,9 @@ class _NodelistPageState extends State<NodelistPage> {
                         runInShell: runInShell);
                     await runCmd(cmd2, stdout: stdout).then((_) async {
                       ostrichCloseSuccessNotification();
+                      context.read<NodeBloc>().add(
+                            const UpdateConnectStatusEvent(status: false),
+                          );
                       _buildTray(false);
                     });
                   });
@@ -299,7 +302,7 @@ class _NodelistPageState extends State<NodelistPage> {
         duration: const Duration(seconds: 10)); */
 
     NodeModel node = state.nodeModel[state.currentNodeIndex];
-    var configRes =  await ServerFileCofig().changeConfig(node);
+    var configRes = await ServerFileCofig().changeConfig(node);
     Logger().d(configRes);
     Logger().d("准备启动");
     final prefs = await SharedPreferences.getInstance();
@@ -314,10 +317,10 @@ class _NodelistPageState extends State<NodelistPage> {
     var count = 0;
     try {
       nativeApi.leafRun(
-          configPath: configPath,
-          wintunPath: tunPath,
-          tun2SocksPath: socksPath)
-      /*          .then((_) async {
+              configPath: configPath,
+              wintunPath: tunPath,
+              tun2SocksPath: socksPath)
+          /*          .then((_) async {
         Timer.periodic(timeout, (timer) {
           //callback function
           //1s 回调一次
@@ -344,7 +347,7 @@ class _NodelistPageState extends State<NodelistPage> {
             );
         ostrichStartSuccessNotification(); //TODO 多次触发
       }) */
-      ;
+          ;
 
       Timer.periodic(timeout, (timer) {
         //callback function
@@ -353,8 +356,8 @@ class _NodelistPageState extends State<NodelistPage> {
         if (count > 10) {
           timer.cancel();
           context.read<NodeBloc>().add(
-            const UpdateConnectStatusEvent(status: false),
-          );
+                const UpdateConnectStatusEvent(status: false),
+              );
           EasyLoading.showToast("启动新的代理失败");
           ostrichStartFailedNotification();
           return;
@@ -365,18 +368,17 @@ class _NodelistPageState extends State<NodelistPage> {
       });
 
       context.read<NodeBloc>().add(
-        UpdateConnectedNodeEvent(node: node),
-      );
+            UpdateConnectedNodeEvent(node: node),
+          );
       context.read<NodeBloc>().add(
-        const UpdateConnectStatusEvent(status: true),
-      );
+            const UpdateConnectStatusEvent(status: true),
+          );
       ostrichStartSuccessNotification(); //TODO 多次触发
 
     } catch (e) {
       ostrichStartFailedNotification();
       rethrow;
     }
-
   }
 
   _checkConnect(Timer timer) async {
