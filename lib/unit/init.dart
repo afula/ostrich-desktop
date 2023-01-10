@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/services.dart';
+import 'package:logger/logger.dart';
 import 'package:ostrich_flutter/unit/native_api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -61,7 +62,7 @@ class InitBeforeLaunch {
         });
       }
     } catch (e) {
-      print(e);
+       Logger().d(e);
     }
   }
 }

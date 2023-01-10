@@ -96,9 +96,9 @@ class _LoginService extends State<LoginService> {
                       pressedOpacity: .5,
                       onPressed: () async {
                         _getServerList();
-                        print("确定");
-                        print(_serverController.text);
-                        print(_idController.text);
+                         Logger().d("确定");
+                         Logger().d(_serverController.text);
+                         Logger().d(_idController.text);
                       }))
             ],
           ),
@@ -134,8 +134,8 @@ class _LoginService extends State<LoginService> {
     HttpNetwork.postJson(_serverController.text.toString() + path, data)
         .then((value) {
       EasyLoading.dismiss();
-      print("result is :");
-      print(value);
+       Logger().d("result is :");
+       Logger().d(value);
       var str = json.encode(value);
       Map<String, dynamic> data = json.decode(str);
       if (data["code"] == 200) {
@@ -161,7 +161,7 @@ class _LoginService extends State<LoginService> {
             .loadString("assets/data/socks_auto.json")
             .then((value) async {
           Map<String, dynamic> jsonMap = json.decode(value);
-          print(jsonMap);
+           Logger().d(jsonMap);
           jsonMap["outbounds"][0]["settings"]["address"] =
               data["ret"]["server"][0]["ip"];
           jsonMap["outbounds"][0]["settings"]["server_name"] =
@@ -186,8 +186,8 @@ class _LoginService extends State<LoginService> {
           if (jsonExist) {
             await jsonFile.delete();
           }
-          print(!await dir.exists());
-          print(dir.path);
+           Logger().d(!await dir.exists());
+           Logger().d(dir.path);
           var stringJson = json.encode(jsonMap);
           stringJson = stringJson
               .replaceAll(
@@ -206,8 +206,8 @@ class _LoginService extends State<LoginService> {
         EasyLoading.showToast(data["msg"]);
       }
     }).onError((error, stackTrace) {
-      print("error is :");
-      print(error);
+       Logger().d("error is :");
+       Logger().d(error);
     });
   }
 }

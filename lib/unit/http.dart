@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:logger/logger.dart';
 
 class HttpNetwork {
   HttpNetwork._internal();
@@ -7,7 +8,7 @@ class HttpNetwork {
 
   ///网络请求配置
   static final Dio dio = Dio(BaseOptions(
-    connectTimeout: 10000,
+    connectTimeout: 60000,
     receiveTimeout: 3000,
   ));
 
@@ -37,30 +38,30 @@ class HttpNetwork {
       case DioErrorType.connectTimeout:
         EasyLoading.dismiss();
         EasyLoading.showToast('连接超时');
-        print("连接超时");
+         Logger().d("连接超时");
         break;
       case DioErrorType.sendTimeout:
         EasyLoading.dismiss();
         EasyLoading.showToast('请求超时');
-        print("请求超时");
+         Logger().d("请求超时");
         break;
       case DioErrorType.receiveTimeout:
         EasyLoading.dismiss();
         EasyLoading.showToast('响应超时');
-        print("响应超时");
+         Logger().d("响应超时");
         break;
       case DioErrorType.response:
         EasyLoading.dismiss();
         EasyLoading.showToast('出现异常');
-        print("出现异常");
+         Logger().d("出现异常");
         break;
       case DioErrorType.cancel:
         EasyLoading.dismiss();
         EasyLoading.showToast('请求取消');
-        print("请求取消");
+         Logger().d("请求取消");
         break;
       default:
-        print("未知错误");
+         Logger().d("未知错误");
         EasyLoading.dismiss();
         EasyLoading.showToast(e.toString());
         break;

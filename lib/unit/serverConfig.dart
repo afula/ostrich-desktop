@@ -1,13 +1,16 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/services.dart';
+import 'package:logger/logger.dart';
 import 'package:ostrich_flutter/node/models/node_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../node/models/node_model.dart';
 
 class ServerFileCofig {
-  static changeConfig(NodeModel node) async{
+ Future<String>  changeConfig(NodeModel node) async{
+   Completer<String> completer = Completer();
     Map<String, String> envVars = Platform.environment;
     var home = envVars['UserProfile'].toString();
     //没有文件夹则创建文件夹
@@ -21,7 +24,7 @@ class ServerFileCofig {
       var serverJson = serverData[index]; */
 
       Map<String, dynamic> jsonMap = json.decode(value);
-      print(jsonMap);
+       Logger().d(jsonMap);
       jsonMap["outbounds"][0]["settings"]["address"] = node.ip;
       jsonMap["outbounds"][0]["settings"]["server_name"] = node.host;
       jsonMap["outbounds"][0]["settings"]["password"] = node.passwd;
@@ -39,13 +42,16 @@ class ServerFileCofig {
       if (jsonExist) {
         await jsonFile.delete();
       }
-      print(!await dir.exists());
-      print(dir.path);
+       Logger().d(!await dir.exists());
+       Logger().d(dir.path);
       var stringJson = json.encode(jsonMap);
       stringJson = stringJson
           .replaceAll("REPLACE_ME_WITH_HOST", node.host)
           .replaceAll("REPLACE_ME_WITH_IP", node.ip);
       await File(dir.path + "/latest.json").writeAsString(stringJson);
+      Logger().d("成功写入配置文件");
+      completer.complete("success");
     });
+    return completer.future;
   }
 }
