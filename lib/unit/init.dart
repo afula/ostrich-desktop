@@ -20,6 +20,7 @@ class InitBeforeLaunch {
           await rootBundle.load("assets/bin/windows/misc/tun2socks.exe");
       var bytesNative =
           await rootBundle.load("assets/bin/windows/misc/native.dll");
+      var bytesDb = await rootBundle.load("assets/data/ostrich.db");
       Map<String, String> envVars = Platform.environment;
       var home = envVars['UserProfile'].toString();
       //没有文件夹则创建文件夹
@@ -36,6 +37,8 @@ class InitBeforeLaunch {
           .asUint8List(bytesNative.offsetInBytes, bytesNative.lengthInBytes));
       await File(dir.path + "/tun2socks.exe").writeAsBytes(bytesTun.buffer
           .asUint8List(bytesTun.offsetInBytes, bytesTun.lengthInBytes));
+      await File(dir.path + "/ostrich.db").writeAsBytes(bytesDb.buffer
+          .asUint8List(bytesDb.offsetInBytes, bytesDb.lengthInBytes));
 
       // await nativeApi.requireAdministrator();
       if (await nativeApi.isAppElevated()) {
@@ -58,7 +61,7 @@ class InitBeforeLaunch {
         EasyLoading.showToast("请您右键使用管理员启动");
         ostrichAdministratorNotification.show();
         Future.delayed(const Duration(milliseconds: 300), () {
-          exit(0);
+          // exit(0);
         });
       }
     } catch (e) {

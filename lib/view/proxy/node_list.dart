@@ -202,6 +202,8 @@ class _NodelistPageState extends State<NodelistPage> {
   }
 
   void _buildTray(bool isConnected) async {
+    await _systemTray.destroy();
+    _initSystemTray();
     NodeState state = context.read<NodeBloc>().state;
 
     _systemTray.setSystemTrayInfo(

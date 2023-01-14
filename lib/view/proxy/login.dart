@@ -12,6 +12,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'dart:convert';
 
 import '../../../node/models/node_model.dart';
+import '../../../node/database/db.dart';
 
 class LoginService extends StatefulWidget {
   const LoginService({Key? key}) : super(key: key);
@@ -96,9 +97,9 @@ class _LoginService extends State<LoginService> {
                       pressedOpacity: .5,
                       onPressed: () async {
                         _getServerList();
-                         Logger().d("确定");
-                         Logger().d(_serverController.text);
-                         Logger().d(_idController.text);
+                        Logger().d("确定");
+                        Logger().d(_serverController.text);
+                        Logger().d(_idController.text);
                       }))
             ],
           ),
@@ -132,10 +133,10 @@ class _LoginService extends State<LoginService> {
     Logger().d("data", data);
     EasyLoading.show(status: '正在获取...');
     HttpNetwork.postJson(_serverController.text.toString() + path, data)
-        .then((value) {
+        .then((value) async {
       EasyLoading.dismiss();
-       Logger().d("result is :");
-       Logger().d(value);
+      Logger().d("result is :");
+      Logger().d(value);
       var str = json.encode(value);
       Map<String, dynamic> data = json.decode(str);
       if (data["code"] == 200) {
@@ -143,25 +144,42 @@ class _LoginService extends State<LoginService> {
         List<NodeModel> nodeList = [];
         List serverList = data["ret"]["server"];
         for (int item = 0; item < serverList.length; item++) {
+          String ip = serverList[item]['ip'].toString();
+          String host = serverList[item]['host'].toString();
+          String passwd = serverList[item]['passwd'].toString();
+          int port = serverList[item]['port'];
+          String country = serverList[item]['country'].toString();
+          String city = serverList[item]['city'].toString();
+
           NodeModel model = NodeModel(
-            ip: serverList[item]['ip'].toString(),
-            host: serverList[item]['host'].toString(),
-            passwd: serverList[item]['passwd'].toString(),
-            port: serverList[item]['port'],
-            country: serverList[item]['country'].toString(),
-            city: serverList[item]['city'].toString(),
+            ip: ip,
+            host: host,
+            passwd: passwd,
+            port: port,
+            country: country,
+            city: city,
           );
           nodeList.add(model);
+
+          DBHelper.insert(DBHelper.nodeTable, {
+            'ip': ip,
+            'host': host,
+            'passwd': passwd,
+            'port': port,
+            'country': country,
+            'city': city,
+          });
         }
         //保存数据
         context.read<NodeBloc>().add(
               AddNodeEvent(nodeList: nodeList),
             );
+
         rootBundle
             .loadString("assets/data/socks_auto.json")
             .then((value) async {
           Map<String, dynamic> jsonMap = json.decode(value);
-           Logger().d(jsonMap);
+          Logger().d(jsonMap);
           jsonMap["outbounds"][0]["settings"]["address"] =
               data["ret"]["server"][0]["ip"];
           jsonMap["outbounds"][0]["settings"]["server_name"] =
@@ -186,8 +204,8 @@ class _LoginService extends State<LoginService> {
           if (jsonExist) {
             await jsonFile.delete();
           }
-           Logger().d(!await dir.exists());
-           Logger().d(dir.path);
+          Logger().d(!await dir.exists());
+          Logger().d(dir.path);
           var stringJson = json.encode(jsonMap);
           stringJson = stringJson
               .replaceAll(
@@ -204,10 +222,37 @@ class _LoginService extends State<LoginService> {
         });
       } else {
         EasyLoading.showToast(data["msg"]);
+        await _getServerListFromDb();
+        context.read<NodeBloc>().add(
+              const UpdateMenuIndexEvent(index: 1),
+            );
       }
-    }).onError((error, stackTrace) {
-       Logger().d("error is :");
-       Logger().d(error);
+    }).onError((error, stackTrace) async {
+      Logger().d("error is :");
+      Logger().d(error);
+      await _getServerListFromDb();
+      context.read<NodeBloc>().add(
+            const UpdateMenuIndexEvent(index: 1),
+          );
     });
+  }
+
+  _getServerListFromDb() async {
+    final dataList = await DBHelper.selectAll(DBHelper.nodeTable);
+
+    final nodeList = dataList
+        .map((item) => NodeModel(
+              ip: item['ip'],
+              host: item['host'],
+              passwd: item['passwd'],
+              port: item['port'],
+              country: item['country'],
+              city: item['city'],
+            ))
+        .toList();
+
+    context.read<NodeBloc>().add(
+          AddNodeEvent(nodeList: nodeList),
+        );
   }
 }
