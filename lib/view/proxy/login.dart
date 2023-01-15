@@ -222,12 +222,16 @@ class _LoginService extends State<LoginService> {
         });
       } else {
         EasyLoading.showToast(data["msg"]);
-        await _getServerListFromDb();
+/*         await _getServerListFromDb();
         context.read<NodeBloc>().add(
               const UpdateMenuIndexEvent(index: 1),
-            );
+            ); */
       }
     }).onError((error, stackTrace) async {
+      EasyLoading.dismiss(); //TODO: more error handling
+      EasyLoading.showSuccess("网络获取节点失败，正在为您获取内置节点！",
+          maskType: EasyLoadingMaskType.clear,
+          duration: const Duration(seconds: 20));
       Logger().d("error is :");
       Logger().d(error);
       await _getServerListFromDb();

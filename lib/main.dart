@@ -20,7 +20,7 @@ void main() async {
   await windowManager.ensureInitialized();
   await windowManager.setPreventClose(true);
   await windowManager.setMinimizable(true);
-  HttpNetwork.init();
+  // HttpNetwork.init();
   Bloc.observer = AppBlocObserver();
   WindowOptions windowOptions = const WindowOptions(
     size: Size(800, 600),
@@ -68,7 +68,7 @@ class AppBlocObserver extends BlocObserver {
   @override
   void onChange(BlocBase bloc, Change change) {
     super.onChange(bloc, change);
-     print(change);
+    print(change);
   }
 
   @override
