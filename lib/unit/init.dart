@@ -21,7 +21,6 @@ class InitBeforeLaunch {
       var bytesNative =
           await rootBundle.load("assets/bin/windows/misc/native.dll");
       var bytesDb = await rootBundle.load("assets/data/ostrich.db");
-      var bytesSqlite = await rootBundle.load("assets/data/sqlite3.dll");
 
       Map<String, String> envVars = Platform.environment;
       var home = envVars['UserProfile'].toString();
@@ -41,8 +40,7 @@ class InitBeforeLaunch {
           .asUint8List(bytesTun.offsetInBytes, bytesTun.lengthInBytes));
       await File(dir.path + "/ostrich.db").writeAsBytes(bytesDb.buffer
           .asUint8List(bytesDb.offsetInBytes, bytesDb.lengthInBytes));
-      await File(dir.path + "/sqlite3.dll").writeAsBytes(bytesSqlite.buffer
-          .asUint8List(bytesSqlite.offsetInBytes, bytesSqlite.lengthInBytes));
+
 
       // await nativeApi.requireAdministrator();
       if (await nativeApi.isAppElevated()) {
@@ -65,7 +63,7 @@ class InitBeforeLaunch {
         EasyLoading.showToast("请您右键使用管理员启动");
         ostrichAdministratorNotification.show();
         Future.delayed(const Duration(milliseconds: 300), () {
-          // exit(0);
+          exit(0);
         });
       }
     } catch (e) {

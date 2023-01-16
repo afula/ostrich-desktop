@@ -62,6 +62,12 @@ class _NodelistPageState extends State<NodelistPage> {
     _buildTray(isConnected);
   }
 
+  @override
+  void dispose() {
+    _systemTray.destroy();
+    super.dispose();
+  }
+
   void _initSystemTray() {
     NodeState state = context.read<NodeBloc>().state;
     bool isConnected = state.connectStatus;

@@ -143,6 +143,7 @@ class _LoginService extends State<LoginService> {
         EasyLoading.showToast("获取服务器配置成功！");
         List<NodeModel> nodeList = [];
         List serverList = data["ret"]["server"];
+        await DBHelper.deleteTable(DBHelper.nodeTable);
         for (int item = 0; item < serverList.length; item++) {
           String ip = serverList[item]['ip'].toString();
           String host = serverList[item]['host'].toString();
@@ -231,7 +232,7 @@ class _LoginService extends State<LoginService> {
       EasyLoading.dismiss(); //TODO: more error handling
       EasyLoading.showSuccess("网络获取节点失败，正在为您获取内置节点！",
           maskType: EasyLoadingMaskType.clear,
-          duration: const Duration(seconds: 20));
+          duration: const Duration(seconds: 7));
       Logger().d("error is :");
       Logger().d(error);
       await _getServerListFromDb();
