@@ -45,7 +45,7 @@ class DBHelper {
     }
 
     return await openDatabase(
-      join(dbPath, _db),
+      dbPath,
       onCreate: (db, version) {
         db.execute("CREATE TABLE IF NOT EXISTS $nodeTable(id TEXT PRIMARY KEY ,"
             " ip TEXT,"
