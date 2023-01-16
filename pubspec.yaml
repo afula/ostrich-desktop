@@ -88,6 +88,7 @@ flutter:
     - assets/data/geo.mmdb
     - assets/data/site.dat
     - assets/data/ostrich.db
+    - assets/data/sqlite3.dll
     - assets/data/socks_auto.json
     - assets/images/
 
