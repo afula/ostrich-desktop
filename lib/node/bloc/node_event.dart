@@ -25,16 +25,13 @@ class AddNodeEvent extends NodeEvent {
   final String title;
   final String desc;
   final String date;
-
   const AddDataEvent({
     required this.title,
     required this.desc,
     required this.date,
   });
-
   @override
   List<Object> get props => [title, desc, date];
-
   AddDataEvent copyWith({
     String? title,
     String? desc,
@@ -115,4 +112,19 @@ class UpdateConnectedNodeEvent extends NodeEvent {
 
   @override
   List<Object> get props => [node];
+}
+
+class ChangeLanguageEvent extends NodeEvent {
+  final String local;
+
+  const ChangeLanguageEvent({required this.local});
+
+  ChangeLanguageEvent copyWith({
+    required String local,
+  }) {
+    return ChangeLanguageEvent(local: local);
+  }
+
+  @override
+  List<Object> get props => [local];
 }

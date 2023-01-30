@@ -5,6 +5,7 @@ import 'package:window_manager/window_manager.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ostrich_flutter/node/bloc/node_bloc.dart';
+import '../../generated/l10n.dart';
 import 'login.dart';
 import 'node_list.dart';
 
@@ -16,10 +17,6 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> with WindowListener {
   final List<Widget> _pages = [const LoginService(), const NodelistPage()];
-  final List<String> _titles = [
-    '设置',
-    '节点',
-  ];
 
   void _closeApp() async {
     await windowManager.setPreventClose(true);
@@ -87,6 +84,10 @@ class _HomePageState extends State<HomePage> with WindowListener {
 
   @override
   Widget build(BuildContext context) {
+    final List<String> _titles = [
+      S.of(context).setting,
+      S.of(context).node,
+    ];
     return Scaffold(body: BlocBuilder<NodeBloc, NodeState>(
         // bloc:,
         builder: (context, state) {

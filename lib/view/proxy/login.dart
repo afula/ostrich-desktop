@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -13,6 +14,7 @@ import 'dart:convert';
 
 import '../../../node/models/node_model.dart';
 import '../../../node/database/db.dart';
+import '../../generated/l10n.dart';
 
 class LoginService extends StatefulWidget {
   const LoginService({Key? key}) : super(key: key);
@@ -55,13 +57,13 @@ class _LoginService extends State<LoginService> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               TextField(
-                decoration: const InputDecoration(
-                  labelText: '服务器地址：',
-                  labelStyle: TextStyle(color: Colors.blue),
-                  enabledBorder: OutlineInputBorder(
+                decoration:  InputDecoration(
+                  labelText: S.of(context).serverAddress,
+                  labelStyle: const TextStyle(color: Colors.blue),
+                  enabledBorder: const OutlineInputBorder(
                       borderSide: BorderSide(color: Color(0x00FF0000)),
                       borderRadius: BorderRadius.all(Radius.circular(10))),
-                  focusedBorder: OutlineInputBorder(
+                  focusedBorder: const OutlineInputBorder(
                       borderSide: BorderSide(color: Color(0x00000000)),
                       borderRadius: BorderRadius.all(Radius.circular(10))),
                   fillColor: Color(0x30cccccc),
@@ -73,8 +75,8 @@ class _LoginService extends State<LoginService> {
               Container(
                 padding: const EdgeInsets.only(top: 20),
                 child: TextField(
-                  decoration: const InputDecoration(
-                    labelText: '用户ID：',
+                  decoration:  InputDecoration(
+                    labelText: S.of(context).userId,
                     labelStyle: TextStyle(color: Colors.blue),
                     enabledBorder: OutlineInputBorder(
                         borderSide: BorderSide(color: Color(0x00FF0000)),
@@ -92,7 +94,7 @@ class _LoginService extends State<LoginService> {
               Container(
                   padding: const EdgeInsets.only(top: 20),
                   child: CupertinoButton(
-                      child: const Text("确定 "),
+                      child:  Text(S.of(context).confirm),
                       color: Colors.blueGrey,
                       pressedOpacity: .5,
                       onPressed: () async {
@@ -100,7 +102,24 @@ class _LoginService extends State<LoginService> {
                         Logger().d("确定");
                         Logger().d(_serverController.text);
                         Logger().d(_idController.text);
-                      }))
+                      })),
+              Row(
+                children: [
+                  CupertinoButton(child: const Text("中文"), onPressed: (){
+                    Logger().d("切换中文");
+                    context.read<NodeBloc>().add(
+                        ChangeLanguageEvent(local: "zh")
+                    );
+
+                  }),
+                  CupertinoButton(child: const Text("英文"), onPressed: (){
+                    Logger().d("切换英文");
+                    context.read<NodeBloc>().add(
+                        ChangeLanguageEvent(local: "en")
+                    );
+                  })
+                ],
+              )
             ],
           ),
         ));

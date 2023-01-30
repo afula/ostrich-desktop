@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../../unit/spuntil.dart';
 import '../models/node_model.dart';
 import 'package:uuid/uuid.dart';
 import '../database/db.dart';
@@ -15,6 +17,7 @@ class NodeBloc extends Bloc<NodeEvent, NodeState> {
     on<UpdateConnectedNodeEvent>(_updateConnectedNode);
     on<UpdateMenuIndexEvent>(_updateMenuIndex);
     on<UpdateNodeIndexEvent>(_updateNodeIndex);
+    on<ChangeLanguageEvent>(_changeLanguage);
   }
 
   Future _addNode(AddNodeEvent event, Emitter<NodeState> emit) async {
@@ -55,7 +58,12 @@ class NodeBloc extends Bloc<NodeEvent, NodeState> {
     emit(state.copyWith(connectStatus: status));
   }
 
-
+  Future<void> _changeLanguage(
+      ChangeLanguageEvent event, Emitter<NodeState> emit) async {
+    String local = event.local;
+    SPUtils.saveLocale(local);
+    emit(state.copyWith(local: local));
+  }
 
 
 
@@ -64,7 +72,8 @@ class NodeBloc extends Bloc<NodeEvent, NodeState> {
     NodeModel node = event.node;
     emit(state.copyWith(connectedNode: node));
   }
-} 
+}
+
 
 /* final list = state.nodeModel.map((NodeModel nodeModel) {
       if (nodeModel.ip == event.ip) {

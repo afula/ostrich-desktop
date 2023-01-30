@@ -1,0 +1,10 @@
+{
+  "launch": "launch",
+  "close": "close",
+  "exit": "exit",
+  "setting": "setting",
+  "node": "node",
+  "serverAddress": "server address",
+  "userId": "user id",
+  "confirm": "confirm"
+}
