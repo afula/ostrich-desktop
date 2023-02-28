@@ -150,7 +150,7 @@ pub fn is_running() -> bool {
 //     ostrich::async_shutdown().await
 // }
 pub fn leaf_shutdown() -> bool {
-    ostrich::sync_shutdown()
+    ostrich::shutdown()
 }
 
 

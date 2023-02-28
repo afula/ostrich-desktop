@@ -6,6 +6,19 @@
   "node": "节点",
   "serverAddress": "服务器地址",
   "userId": "用户ID",
-  "confirm": "确定"
-
+  "confirm": "确定",
+  "proxyInitFailure": "启动新的代理失败",
+  "proxyInitSuccess": "启动新的代理成功",
+  "connected": "已连接",
+  "change": "切换",
+  "changed": "已切换",
+  "changeFailure": "切换失败",
+  "starting": "正在启动新的代理",
+  "started": "已经启动",
+  "closed": "已经关闭",
+  "closedFailure": "关闭失败",
+  "inputEmpty": "输入不能为空",
+  "inputFormatWrong": "输入格式有误",
+  "fetching": "正在获取节点",
+  "fetched": "已经获取节点"
 }

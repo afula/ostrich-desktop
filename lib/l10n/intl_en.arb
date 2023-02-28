@@ -6,5 +6,19 @@
   "node": "node",
   "serverAddress": "server address",
   "userId": "user id",
-  "confirm": "confirm"
+  "confirm": "confirm",
+  "proxyInitFailure": "Failed to start proxy",
+  "proxyInitSuccess": "Start proxy successfully",
+  "connected": "Connected",
+  "change": "Switch",
+  "changed": "Switched",
+  "changeFailure": "Failed to switch",
+  "starting": "Starting",
+  "started": "Started",
+  "closed": "Closed",
+  "closedFailure": "Closed failure",
+  "inputEmpty": "The input cannt be empty",
+  "inputFormatWrong": "The input format is wrong",
+  "fetching": "Fetching nodes from server",
+  "fetched": "nodes are ready"
 }

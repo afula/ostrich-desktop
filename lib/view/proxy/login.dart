@@ -15,6 +15,7 @@ import 'dart:convert';
 import '../../../node/models/node_model.dart';
 import '../../../node/database/db.dart';
 import '../../generated/l10n.dart';
+import '../../unit/spuntil.dart';
 
 class LoginService extends StatefulWidget {
   const LoginService({Key? key}) : super(key: key);
@@ -57,7 +58,7 @@ class _LoginService extends State<LoginService> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               TextField(
-                decoration:  InputDecoration(
+                decoration: InputDecoration(
                   labelText: S.of(context).serverAddress,
                   labelStyle: const TextStyle(color: Colors.blue),
                   enabledBorder: const OutlineInputBorder(
@@ -75,7 +76,7 @@ class _LoginService extends State<LoginService> {
               Container(
                 padding: const EdgeInsets.only(top: 20),
                 child: TextField(
-                  decoration:  InputDecoration(
+                  decoration: InputDecoration(
                     labelText: S.of(context).userId,
                     labelStyle: TextStyle(color: Colors.blue),
                     enabledBorder: OutlineInputBorder(
@@ -94,7 +95,7 @@ class _LoginService extends State<LoginService> {
               Container(
                   padding: const EdgeInsets.only(top: 20),
                   child: CupertinoButton(
-                      child:  Text(S.of(context).confirm),
+                      child: Text(S.of(context).confirm),
                       color: Colors.blueGrey,
                       pressedOpacity: .5,
                       onPressed: () async {
@@ -103,23 +104,26 @@ class _LoginService extends State<LoginService> {
                         Logger().d(_serverController.text);
                         Logger().d(_idController.text);
                       })),
-              Row(
+/*               Row(
                 children: [
-                  CupertinoButton(child: const Text("中文"), onPressed: (){
-                    Logger().d("切换中文");
-                    context.read<NodeBloc>().add(
-                        ChangeLanguageEvent(local: "zh")
-                    );
-
-                  }),
-                  CupertinoButton(child: const Text("英文"), onPressed: (){
-                    Logger().d("切换英文");
-                    context.read<NodeBloc>().add(
-                        ChangeLanguageEvent(local: "en")
-                    );
-                  })
+                  CupertinoButton(
+                      child: const Text("中文"),
+                      onPressed: () {
+                        Logger().d("切换中文");
+                        context
+                            .read<NodeBloc>()
+                            .add(ChangeLanguageEvent(local: "zh"));
+                      }),
+                  CupertinoButton(
+                      child: const Text("EN"),
+                      onPressed: () {
+                        Logger().d("切换英文");
+                        context
+                            .read<NodeBloc>()
+                            .add(const ChangeLanguageEvent(local: "en"));
+                      })
                 ],
-              )
+              ) */
             ],
           ),
         ));
@@ -130,27 +134,34 @@ class _LoginService extends State<LoginService> {
 //split old _getServerList into _getServerList and _update
   _getServerList() async {
     if (_serverController.text.isEmpty || _idController.text.isEmpty) {
-      EasyLoading.showToast("不能输入为空！");
+      EasyLoading.showToast(S.of(context).inputEmpty);
       return;
     }
     const regex =
         "(https?|ftp|file)://[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]";
     RegExp isUrl = RegExp(regex);
     if (!isUrl.hasMatch(_serverController.text.toString())) {
-      EasyLoading.showError("服务器地址格式不正确！");
+      EasyLoading.showError(S.of(context).inputFormatWrong);
       return;
     }
     final prefs = await SharedPreferences.getInstance();
     //将服务器地址和用户ID持久存储
     prefs.setString("ip", _serverController.text.toString());
     prefs.setString("id", _idController.text.toString().trim());
-    const path = ":443/ostrich/api/mobile/servers/list";
+    const path = ":443/ostrich/api/v2/mobile/servers/list";
+    String local = SPUtils.getLocale();
+    int locale = 0;
+    if (local == "en") {
+      locale = 1;
+    }
+
     Map<String, dynamic> data = {
       "user_id": _idController.text.toString().trim(),
+      "locale": locale,
       "plateform": 1
     };
     Logger().d("data", data);
-    EasyLoading.show(status: '正在获取...');
+    EasyLoading.show(status: S.of(context).fetching);
     HttpNetwork.postJson(_serverController.text.toString() + path, data)
         .then((value) async {
       EasyLoading.dismiss();
@@ -159,7 +170,7 @@ class _LoginService extends State<LoginService> {
       var str = json.encode(value);
       Map<String, dynamic> data = json.decode(str);
       if (data["code"] == 200) {
-        EasyLoading.showToast("获取服务器配置成功！");
+        EasyLoading.showToast(S.of(context).fetched);
         List<NodeModel> nodeList = [];
         List serverList = data["ret"]["server"];
         await DBHelper.deleteTable(DBHelper.nodeTable);

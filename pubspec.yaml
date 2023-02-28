@@ -40,11 +40,11 @@ dependencies:
   logger: ^1.1.0
   http: ^0.13.4
   adaptive_dialog: ^1.4.0
-  dart_ping: ^6.1.2
+  dart_ping: ^8.0.1
   flutter_rust_bridge: ^1.59.0
   # tray_manager: ^0.2.0
   system_tray: ^2.0.2
-  window_manager: ^0.2.7
+  window_manager: ^0.3.0
   flutter_bloc: ^8.1.1
   sqflite: ^2.2.0+3
   sqflite_common_ffi: ^2.2.1
@@ -66,7 +66,7 @@ dev_dependencies:
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
-  flutter_lints: ^1.0.0
+  flutter_lints: ^2.0.1
   ffigen: ^7.2.4
 
 # For information on the generic Dart part of this file, see the
@@ -88,8 +88,8 @@ flutter:
     - assets/bin/windows/misc/native.dll
     - assets/bin/windows/misc/tun2socks.exe
     - assets/bin/windows/misc/wintun.dll
-    - assets/data/geo.mmdb
-    - assets/data/site.dat
+    - assets/data/geoip.dat
+    - assets/data/tmp/geoip.dat
     - assets/data/ostrich.db
     - assets/data/sqlite3.dll
     - assets/data/socks_auto.json

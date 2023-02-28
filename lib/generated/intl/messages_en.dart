@@ -22,13 +22,33 @@ class MessageLookup extends MessageLookupByLibrary {
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
+        "change": MessageLookupByLibrary.simpleMessage("Switch"),
+        "changeFailure":
+            MessageLookupByLibrary.simpleMessage("Failed to switch"),
+        "changed": MessageLookupByLibrary.simpleMessage("Switched"),
         "close": MessageLookupByLibrary.simpleMessage("close"),
+        "closed": MessageLookupByLibrary.simpleMessage("Closed"),
+        "closedFailure": MessageLookupByLibrary.simpleMessage("Closed failure"),
         "confirm": MessageLookupByLibrary.simpleMessage("confirm"),
+        "connected": MessageLookupByLibrary.simpleMessage("Connected"),
         "exit": MessageLookupByLibrary.simpleMessage("exit"),
+        "fetched": MessageLookupByLibrary.simpleMessage("nodes are ready"),
+        "fetching":
+            MessageLookupByLibrary.simpleMessage("Fetching nodes from server"),
+        "inputEmpty":
+            MessageLookupByLibrary.simpleMessage("The input cannt be empty"),
+        "inputFormatWrong":
+            MessageLookupByLibrary.simpleMessage("The input format is wrong"),
         "launch": MessageLookupByLibrary.simpleMessage("launch"),
         "node": MessageLookupByLibrary.simpleMessage("node"),
+        "proxyInitFailure":
+            MessageLookupByLibrary.simpleMessage("Failed to start proxy"),
+        "proxyInitSuccess":
+            MessageLookupByLibrary.simpleMessage("Start proxy successfully"),
         "serverAddress": MessageLookupByLibrary.simpleMessage("server address"),
         "setting": MessageLookupByLibrary.simpleMessage("setting"),
+        "started": MessageLookupByLibrary.simpleMessage("Started"),
+        "starting": MessageLookupByLibrary.simpleMessage("Starting"),
         "userId": MessageLookupByLibrary.simpleMessage("user id")
       };
 }

@@ -21,7 +21,8 @@ class InitBeforeLaunch {
       var bytesNative =
           await rootBundle.load("assets/bin/windows/misc/native.dll");
       var bytesDb = await rootBundle.load("assets/data/ostrich.db");
-
+      var bytesGeo = await rootBundle.load("assets/data/geoip.dat");
+      var bytesTmpGeo = await rootBundle.load("assets/data/tmp/geoip.dat");
       Map<String, String> envVars = Platform.environment;
       var home = envVars['UserProfile'].toString();
       //没有文件夹则创建文件夹
@@ -40,7 +41,10 @@ class InitBeforeLaunch {
           .asUint8List(bytesTun.offsetInBytes, bytesTun.lengthInBytes));
       await File(dir.path + "/ostrich.db").writeAsBytes(bytesDb.buffer
           .asUint8List(bytesDb.offsetInBytes, bytesDb.lengthInBytes));
-
+      await File(dir.path + "/geoip.dat").writeAsBytes(bytesGeo.buffer
+          .asUint8List(bytesGeo.offsetInBytes, bytesGeo.lengthInBytes));
+      await File(miscDir.path + "/geoip.dat").writeAsBytes(bytesTmpGeo.buffer
+          .asUint8List(bytesTmpGeo.offsetInBytes, bytesTmpGeo.lengthInBytes));
 
       // await nativeApi.requireAdministrator();
       if (await nativeApi.isAppElevated()) {

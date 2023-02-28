@@ -1,4 +1,6 @@
+import 'package:logger/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:io';
 
 class SPUtils {
   SPUtils._internal();
@@ -6,13 +8,10 @@ class SPUtils {
   static SharedPreferences? _spf;
 
   static Future<SharedPreferences?> init() async {
-    if (_spf == null) {
-      _spf = await SharedPreferences.getInstance();
-    }
+    _spf ??= await SharedPreferences.getInstance();
+    // await _spf?.clear();
     return _spf;
   }
-
-
 
   ///语言
   static Future<bool>? saveLocale(String locale) {
@@ -21,10 +20,8 @@ class SPUtils {
 
   static String getLocale() {
     String? locale = _spf?.getString('key_locale');
-    if (locale == null) {
-      locale = 'zh';
-    }
+    locale ??= Platform.localeName.split('_')[0];
+    Logger().d("set locale to: $locale");
     return locale;
   }
-
 }

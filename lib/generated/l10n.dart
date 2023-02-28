@@ -129,6 +129,146 @@ class S {
       args: [],
     );
   }
+
+  /// `Failed to start proxy`
+  String get proxyInitFailure {
+    return Intl.message(
+      'Failed to start proxy',
+      name: 'proxyInitFailure',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Start proxy successfully`
+  String get proxyInitSuccess {
+    return Intl.message(
+      'Start proxy successfully',
+      name: 'proxyInitSuccess',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Connected`
+  String get connected {
+    return Intl.message(
+      'Connected',
+      name: 'connected',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Switch`
+  String get change {
+    return Intl.message(
+      'Switch',
+      name: 'change',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Switched`
+  String get changed {
+    return Intl.message(
+      'Switched',
+      name: 'changed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Failed to switch`
+  String get changeFailure {
+    return Intl.message(
+      'Failed to switch',
+      name: 'changeFailure',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Starting`
+  String get starting {
+    return Intl.message(
+      'Starting',
+      name: 'starting',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Started`
+  String get started {
+    return Intl.message(
+      'Started',
+      name: 'started',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Closed`
+  String get closed {
+    return Intl.message(
+      'Closed',
+      name: 'closed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Closed failure`
+  String get closedFailure {
+    return Intl.message(
+      'Closed failure',
+      name: 'closedFailure',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The input cannt be empty`
+  String get inputEmpty {
+    return Intl.message(
+      'The input cannt be empty',
+      name: 'inputEmpty',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The input format is wrong`
+  String get inputFormatWrong {
+    return Intl.message(
+      'The input format is wrong',
+      name: 'inputFormatWrong',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Fetching nodes from server`
+  String get fetching {
+    return Intl.message(
+      'Fetching nodes from server',
+      name: 'fetching',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `nodes are ready`
+  String get fetched {
+    return Intl.message(
+      'nodes are ready',
+      name: 'fetched',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

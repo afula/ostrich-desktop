@@ -15,6 +15,7 @@ import '../../../unit/serverConfig.dart';
 import 'package:local_notifier/local_notifier.dart';
 import 'package:system_tray/system_tray.dart';
 import 'package:window_manager/window_manager.dart';
+import '../../generated/l10n.dart';
 
 class NodelistPage extends StatefulWidget {
   const NodelistPage({Key? key}) : super(key: key);
@@ -27,32 +28,7 @@ class _NodelistPageState extends State<NodelistPage> {
   MaterialAccentColor launchColor = Colors.deepOrangeAccent;
   final Menu _menu = Menu();
   final SystemTray _systemTray = SystemTray();
-  LocalNotification? ostrichSwitchSuccessNotification = LocalNotification(
-    identifier: 'ostrichSwitchSuccessNotification',
-    title: "Ostrich",
-    body: "代理已经切换!",
-/*     actions: [
-      LocalNotificationAction(
-        text: 'Yes',
-      ),
-      LocalNotificationAction(
-        text: 'No',
-      ),
-    ], */
-  );
-  LocalNotification? ostrichSwitchFailedNotification = LocalNotification(
-    identifier: 'ostrichSwitchFailedNotification',
-    title: "Ostrich",
-    body: "代理切换失败!",
-/*     actions: [
-      LocalNotificationAction(
-        text: 'Yes',
-      ),
-      LocalNotificationAction(
-        text: 'No',
-      ),
-    ], */
-  );
+
   @override
   void initState() {
     NodeState state = context.read<NodeBloc>().state;
@@ -93,28 +69,6 @@ class _NodelistPageState extends State<NodelistPage> {
             Container(
                 padding: const EdgeInsets.only(bottom: 70),
                 child: CupertinoButton(
-                    child: state.connectStatus
-                        ? RichText(
-                            textAlign: TextAlign.center,
-                            text: TextSpan(
-                              text: '切换 ',
-                              style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 17,
-                                  color: Colors.black),
-                              children: <TextSpan>[
-                                TextSpan(
-                                    text:
-                                        '\n已连接: ${state.connectedNode.country}-${state.connectedNode.city}',
-                                    style: const TextStyle(
-                                        // fontStyle: FontStyle.italic,
-                                        fontSize: 12,
-                                        color: Colors.black,
-                                        fontWeight: FontWeight.w100)),
-                              ],
-                            ),
-                          )
-                        : const Text("切换 "),
                     color: state.connectStatus
                         ? Colors.greenAccent
                         : Colors.blueAccent,
@@ -123,18 +77,42 @@ class _NodelistPageState extends State<NodelistPage> {
                       if ((state.connectedNode.ip ==
                               state.nodeModel[state.currentNodeIndex].ip) &&
                           state.connectStatus) {
+                        String connected = S.of(context).connected;
                         EasyLoading.showSuccess(
-                            "您已经连接: ${state.connectedNode.country}-${state.connectedNode.city}, 无需切换！",
+                            "$connected: ${state.connectedNode.country}-${state.connectedNode.city}",
                             maskType: EasyLoadingMaskType.clear);
                         return;
                       }
                       try {
                         _switchNode();
-                        ostrichSwitchSuccessNotification?.show();
+                        ostrichSwitchSuccessNotification(S.of(context).changed);
                       } catch (_) {
-                        ostrichSwitchFailedNotification?.show();
+                        ostrichSwitchFailedNotification(
+                            S.of(context).changeFailure);
                       }
-                    }))
+                    },
+                    child: state.connectStatus
+                        ? RichText(
+                            textAlign: TextAlign.center,
+                            text: TextSpan(
+                              text: S.of(context).change,
+                              style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 17,
+                                  color: Colors.black),
+                              children: <TextSpan>[
+                                TextSpan(
+                                    text:
+                                        '\n${S.of(context).connected}: ${state.connectedNode.country}-${state.connectedNode.city}',
+                                    style: const TextStyle(
+                                        // fontStyle: FontStyle.italic,
+                                        fontSize: 12,
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.w100)),
+                              ],
+                            ),
+                          )
+                        : Text(S.of(context).change)))
           ],
         );
       }),
@@ -147,9 +125,8 @@ class _NodelistPageState extends State<NodelistPage> {
       nodeList.add(Container(
         margin: const EdgeInsets.all(10),
         child: CheckboxListTile(
-          title: Text(state.nodeModel[index].country +
-              "--" +
-              state.nodeModel[index].city),
+          title: Text(
+              "${state.nodeModel[index].country}--${state.nodeModel[index].city}"),
           value: state.currentNodeIndex == index ? true : false,
           checkColor: Colors.green,
           activeColor: Colors.greenAccent,
@@ -170,7 +147,7 @@ class _NodelistPageState extends State<NodelistPage> {
       // 关闭
       try {
         // Execute!
-        EasyLoading.showSuccess("正在启动新的代理,请稍后！",
+        EasyLoading.showSuccess(S.of(context).starting,
             maskType: EasyLoadingMaskType.clear,
             duration: const Duration(seconds: 20));
         await nativeApi.leafShutdown().then((_) async {
@@ -178,25 +155,25 @@ class _NodelistPageState extends State<NodelistPage> {
           var cmd2 = ProcessCmd('taskkill', ['/IM', 'tun2socks.exe', '/F'],
               runInShell: runInShell);
           await runCmd(cmd2, stdout: stdout).then((_) async {
-            ostrichCloseSuccessNotification();
+            ostrichCloseSuccessNotification(S.of(context).started);
             _ostrichStart();
             _buildTray(true);
           });
         });
       } catch (e) {
-        EasyLoading.showInfo("经清理旧的代理失败" + e.toString());
+        EasyLoading.showInfo("清理旧的代理失败" + e.toString());
         context.read<NodeBloc>().add(
               const UpdateConnectStatusEvent(status: false),
             );
         _buildTray(false);
-        ostrichCloseFailedNotification();
+        ostrichCloseFailedNotification(S.of(context).proxyInitFailure);
         rethrow;
       }
       return;
     }
 
     try {
-      EasyLoading.showSuccess("正在启动新的代理,请稍后！",
+      EasyLoading.showSuccess(S.of(context).starting,
           maskType: EasyLoadingMaskType.clear,
           duration: const Duration(seconds: 20));
       _ostrichStart();
@@ -220,7 +197,7 @@ class _NodelistPageState extends State<NodelistPage> {
       state.nodeModel.isEmpty
           ? MenuSeparator()
           : MenuItemLabel(
-              label: isConnected ? "关闭" : "启动",
+              label: isConnected ? S.of(context).close : S.of(context).launch,
               onClicked: (menuItem) async {
                 if (isConnected) {
                   await nativeApi.leafShutdown().then((_) async {
@@ -229,7 +206,7 @@ class _NodelistPageState extends State<NodelistPage> {
                         'taskkill', ['/IM', 'tun2socks.exe', '/F'],
                         runInShell: runInShell);
                     await runCmd(cmd2, stdout: stdout).then((_) async {
-                      ostrichCloseSuccessNotification();
+                      ostrichCloseSuccessNotification(S.of(context).closed);
                       context.read<NodeBloc>().add(
                             const UpdateConnectStatusEvent(status: false),
                           );
@@ -249,7 +226,7 @@ class _NodelistPageState extends State<NodelistPage> {
             ),
       MenuSeparator(),
       MenuItemLabel(
-          label: '设置',
+          label: S.of(context).setting,
           onClicked: (menuItem) async {
             await windowManager.show();
             await windowManager.focus();
@@ -257,7 +234,7 @@ class _NodelistPageState extends State<NodelistPage> {
           }),
       MenuSeparator(),
       MenuItemLabel(
-          label: '退出程序',
+          label: S.of(context).exit,
           onClicked: (menuItem) async {
             var running = await nativeApi.isRunning();
             if (running) {
@@ -282,18 +259,18 @@ class _NodelistPageState extends State<NodelistPage> {
     NodeState state = context.read<NodeBloc>().state;
     try {
       // Execute!
-      EasyLoading.showSuccess("正在清理旧的代理");
+      // EasyLoading.showSuccess("正在清理旧的代理");
       await nativeApi.leafShutdown();
-      EasyLoading.showSuccess("已经清理旧的代理");
+      // EasyLoading.showSuccess("已经清理旧的代理");
       final runInShell = Platform.isWindows;
       var cmd2 = ProcessCmd('taskkill', ['/IM', 'tun2socks.exe', '/F'],
           runInShell: runInShell);
       await runCmd(cmd2, stdout: stdout);
 
-      ostrichCloseSuccessNotification();
+      ostrichCloseSuccessNotification(S.of(context).closed);
     } catch (e) {
-      EasyLoading.showInfo("经清理旧的代理失败" + e.toString());
-      ostrichCloseFailedNotification();
+      EasyLoading.showInfo("清理旧的代理失败$e");
+      ostrichCloseFailedNotification(S.of(context).closedFailure);
     }
   }
 
@@ -367,7 +344,7 @@ class _NodelistPageState extends State<NodelistPage> {
                 const UpdateConnectStatusEvent(status: false),
               );
           EasyLoading.showToast("启动新的代理失败");
-          ostrichStartFailedNotification();
+          ostrichStartFailedNotification(S.of(context).proxyInitFailure);
           return;
           // EasyLoading.showToast("连接失败");
         }
@@ -381,10 +358,9 @@ class _NodelistPageState extends State<NodelistPage> {
       context.read<NodeBloc>().add(
             const UpdateConnectStatusEvent(status: true),
           );
-      ostrichStartSuccessNotification(); //TODO 多次触发
-
+      ostrichStartSuccessNotification(S.of(context).started); //TODO 多次触发
     } catch (e) {
-      ostrichStartFailedNotification();
+      ostrichStartFailedNotification(S.of(context).proxyInitFailure);
       rethrow;
     }
   }

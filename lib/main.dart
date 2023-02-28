@@ -51,38 +51,35 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
         create: (context) => NodeBloc(),
-    child: BlocBuilder<NodeBloc, NodeState>(builder: (context, state) {
-    var local = SPUtils.getLocale();
-    Logger().d("获取本地存储的local---"+local);
-    if(local.isNotEmpty){
-      context.read<NodeBloc>().add(
-          ChangeLanguageEvent(local: local)
-      );
-    }
-    return MaterialApp(
-    title: 'Ostrich Desktop',
-    localizationsDelegates: const [
-      S.delegate,
-      GlobalMaterialLocalizations.delegate,
-      GlobalWidgetsLocalizations.delegate,
-      GlobalCupertinoLocalizations.delegate,
-    ],
-    locale: Locale(state.local),
-    supportedLocales: S.delegate.supportedLocales,
-    theme: ThemeData(
-    primarySwatch: Colors.blueGrey,
-    fontFamily: 'Microsoft YaHei',
-    ),
-    routes: {
-    "/main_menu_setting": (context) => const HomePage(),
-    "/main_menu_server_list": (context) => const NodelistPage(),
-    // "/home_page": (context) => const MyHomePage(title: "Ostrich")
-    },
-    home: const HomePage(),
-    builder: EasyLoading.init(),
-    );
-    })
-    );
+        child: BlocBuilder<NodeBloc, NodeState>(builder: (context, state) {
+          var local = SPUtils.getLocale();
+          Logger().d("获取本地存储的local---" + local);
+          if (local.isNotEmpty) {
+            context.read<NodeBloc>().add(ChangeLanguageEvent(local: local));
+          }
+          return MaterialApp(
+            title: 'Ostrich Desktop',
+            localizationsDelegates: const [
+              S.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            locale: Locale(state.local),
+            supportedLocales: S.delegate.supportedLocales,
+            theme: ThemeData(
+              primarySwatch: Colors.blueGrey,
+              fontFamily: 'Microsoft YaHei',
+            ),
+            routes: {
+              "/main_menu_setting": (context) => const HomePage(),
+              "/main_menu_server_list": (context) => const NodelistPage(),
+              // "/home_page": (context) => const MyHomePage(title: "Ostrich")
+            },
+            home: const HomePage(),
+            builder: EasyLoading.init(),
+          );
+        }));
   }
 }
 
